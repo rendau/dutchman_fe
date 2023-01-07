@@ -1,9 +1,17 @@
 export function list (ctx) {
-  return this.$api.get('data')
+  ctx.commit('setLoading', true)
+  return this.$api.get('data').finally(() => {
+    ctx.commit('setLoading', false)
+  })
 }
 
 export function get (ctx, id) {
-  return this.$api.get(`data/${id}`)
+  ctx.commit('setLoading', true)
+  return this.$api.get(`data/${id}`).then(resp => {
+    ctx.commit('setSelectedRealm', resp.data || null)
+  }).finally(() => {
+    ctx.commit('setLoading', false)
+  })
 }
 
 export function create (ctx, data) {
@@ -16,4 +24,11 @@ export function update (ctx, { id, data }) {
 
 export function remove (ctx, id) {
   return this.$api.delete(`data/${id}`)
+}
+
+export async function select (ctx, id) {
+  if (id) {
+    return ctx.dispatch('get', id)
+  }
+  ctx.commit('setSelected', null)
 }

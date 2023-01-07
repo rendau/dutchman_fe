@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="HHH Lpr lFf" class="app-bg-color relative-position">
+  <q-layout view="LHH LpR LFR" class="app-bg-color relative-position">
     <Header/>
 
     <Drawer/>
