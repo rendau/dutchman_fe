@@ -15,7 +15,12 @@ export function refresh ({ state, dispatch }, nr401 = false) {
 export function refreshSinceAppStart ({ dispatch }) {
   if (!ctxLoadSinceAppStartPr) {
     console.log('start refresh-profile since app-start')
-    ctxLoadSinceAppStartPr = dispatch('refresh', true).catch(err => {
+    ctxLoadSinceAppStartPr = dispatch('refresh', true).then(() => {
+      return Promise.all([
+        dispatch('dic/get', null, { root: true }),
+        dispatch('config/get', null, { root: true }),
+      ])
+    }, err => {
       if (err.data?.code === cns.ErrNotAuthorized) {
         return Promise.resolve(null)
       } else {
@@ -35,7 +40,12 @@ export function resetCtxLoadSinceAppStartPr () {
 export function logout ({ dispatch, getters }) {
   let pr
   if (getters['authTokenAccess']) {
-    pr = this.$api.post('profile/logout', null, { baseURL: cns.AccountApiUrl, nr401: true, nfa: true, nl: true }).catch(() => {})
+    pr = this.$api.post('profile/logout', null, {
+      baseURL: cns.AccountApiUrl,
+      nr401: true,
+      nfa: true,
+      nl: true,
+    }).catch(() => {})
   } else {
     pr = Promise.resolve()
   }

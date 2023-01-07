@@ -29,8 +29,11 @@ function irRepError (err) {
   if (!err) {
     err = {}
   }
-  if (err.response?.status === 401) {
-    err.response.data = { error_code: cns.ErrNotAuthorized }
+  const apiErrAttr = 'error_code'
+  if (err.response?.data?.[apiErrAttr] === cns.ErrNotAuthorized) {
+    err.response.status = 401
+  } else if (err.response?.status === 401) {
+    err.response.data = { [apiErrAttr]: cns.ErrNotAuthorized }
   }
   return Promise.reject({
     config: err.config,
