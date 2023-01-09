@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="row items-center q-pr-md relative-position">
+    <div class="row items-center q-pr-md q-py-sm relative-position">
       <div v-if="bb" class="q-pr-lg">
         <q-btn dense outline round color="grey-4" @click="$router.back()">
           <q-icon name="chevron_left" color="grey-7"/>

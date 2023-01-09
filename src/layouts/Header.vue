@@ -5,16 +5,6 @@
         <q-btn flat dense round icon="menu" color="grey-8" @click="$store.commit('app/toggleDrawer')"/>
       </div>
 
-      <q-avatar>
-        <q-icon name="rocket_launch" size="40px"/>
-<!--        <q-img no-spinner no-transition src="~assets/icon.png"
-               width="40px"/>-->
-      </q-avatar>
-
-      <q-toolbar-title class="text-weight-medium">
-        Temp
-      </q-toolbar-title>
-
       <q-space/>
 
       <div v-if="$store.getters['profile/isAuthed']">

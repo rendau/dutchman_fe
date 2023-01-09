@@ -1,7 +1,7 @@
 export function list (ctx) {
   ctx.commit('setLoading', true)
   return this.$api.get('data').then(resp => {
-    ctx.commit('setRealms', resp.data?.results?.length || [])
+    ctx.commit('setRealms', resp.data?.results || [])
   }).finally(() => {
     ctx.commit('setLoading', false)
   })

@@ -1,9 +1,11 @@
 <template>
-  <q-select dense outlined clearable
+  <q-select dense outlined
             emit-value map-options
             :label="selected ? undefined : 'Realm'"
-            :model-value="selected"
+            :model-value="selected?.name"
             :options="ops"
+            :loading="loading"
+            bg-color="blue-1"
             @update:model-value="onInput">
     <template v-slot:[slotName]>
       <div v-close-popup class="fit q-pa-sm">
@@ -29,6 +31,7 @@ const store = useStore()
 
 const ops = computed(() => util.lOps(store.state.data.realms))
 const selected = computed(() => store.state.data.selectedRealm)
+const loading = computed(() => store.state.data.loading)
 const slotName = computed(() => (ops.value.length > 0 ? 'after-options' : 'no-option'))
 
 const onInput = v => {

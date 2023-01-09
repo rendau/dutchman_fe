@@ -10,6 +10,7 @@ import TablePagination from 'components/acs/TablePagination'
 import TableTools from 'components/acs/TableTools'
 import TableTotalCounter from 'components/acs/TableTotalCounter'
 import TrNoRows from 'components/acs/TrNoRows'
+import LabelValue from 'components/acs/LabelValue.vue'
 
 export default ({ app }) => {
   app.component('ac-spn', Spn)
@@ -24,5 +25,6 @@ export default ({ app }) => {
   app.component('ac-table-tools', TableTools)
   app.component('ac-table-total-counter', TableTotalCounter)
   app.component('ac-tr-no-rows', TrNoRows)
+  app.component('ac-label-value', LabelValue)
 
 }
