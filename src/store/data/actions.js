@@ -1,15 +1,15 @@
 export function list (ctx) {
   ctx.commit('setLoading', true)
-  return this.$api.get('data').finally(() => {
+  return this.$api.get('data').then(resp => {
+    ctx.commit('setRealms', resp.data?.results?.length || [])
+  }).finally(() => {
     ctx.commit('setLoading', false)
   })
 }
 
 export function get (ctx, id) {
   ctx.commit('setLoading', true)
-  return this.$api.get(`data/${id}`).then(resp => {
-    ctx.commit('setSelectedRealm', resp.data || null)
-  }).finally(() => {
+  return this.$api.get(`data/${id}`).finally(() => {
     ctx.commit('setLoading', false)
   })
 }
@@ -27,8 +27,11 @@ export function remove (ctx, id) {
 }
 
 export async function select (ctx, id) {
-  if (id) {
-    return ctx.dispatch('get', id)
+  if (!id) {
+    ctx.commit('setSelectedRealm', null)
+    return
   }
-  ctx.commit('setSelected', null)
+  return ctx.dispatch('get', id).then(resp => {
+    ctx.commit('setSelectedRealm', resp.data || null)
+  })
 }

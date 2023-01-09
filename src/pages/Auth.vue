@@ -1,5 +1,5 @@
 <template>
-  <q-page class="fullscreen flex flex-center q-pa-md">
+  <div class="fullscreen flex flex-center q-pa-md">
     <div>
       <div class="column no-wrap items-center">
         <div>
@@ -16,7 +16,7 @@
         </div>
       </div>
     </div>
-  </q-page>
+  </div>
 </template>
 
 <script setup>

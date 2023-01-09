@@ -1,7 +1,7 @@
 <template>
-  <q-page class="text-center q-pt-lg">
+  <div class="text-center">
     hello world!
-  </q-page>
+  </div>
 </template>
 
 <script setup>

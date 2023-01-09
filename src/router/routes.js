@@ -30,6 +30,7 @@ const routes = [
       requiresAuth: true,
     },
     children: [
+      { path: 'realm/create', name: 'realm-create', component: () => import('pages/RealmCE.vue') },
       { path: '', component: () => import('pages/Index.vue') },
     ],
   },

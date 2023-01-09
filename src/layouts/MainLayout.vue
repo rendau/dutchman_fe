@@ -1,11 +1,11 @@
 <template>
-  <q-layout view="LHH LpR LFR" class="app-bg-color relative-position">
+  <q-layout view="LhH LpR LFR" class="app-bg-color relative-position">
     <Header/>
 
     <Drawer/>
 
     <q-page-container>
-      <q-page class="q-pt-md q-pl-lg q-pr-md q-pb-lg" style="padding-left: 20px">
+      <q-page class="q-pt-md q-pr-md q-pb-lg" style="padding-left: 20px">
         <router-view/>
       </q-page>
     </q-page-container>

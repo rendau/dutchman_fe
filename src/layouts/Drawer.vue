@@ -2,12 +2,9 @@
   <q-drawer :model-value="$store.state.app.drawer" show-if-above bordered
             content-class="bg-grey-1" :width="280"
             @update:model-value="$store.commit('app/setDrawer', $event)">
-    <q-select outlined options-dense clearable
-              emit-value map-options
-              :model-value="$store.state.data.selectedRealm"
-              :options="$u.lOps($store.state.data.realms)"
-              @update:model-value="onInputRealm">
-    </q-select>
+    <div class="q-pa-sm">
+      <RealmSelect/>
+    </div>
 
     <q-list class="q-py-md">
       <q-item v-for="m in menus" :key="`menu-${m.name}`" dense class="q-pl-lg"
@@ -25,10 +22,13 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed } from 'vue'
 import { useStore } from 'vuex'
+import RealmSelect from './RealmSelect.vue'
 
 const store = useStore()
+
+const selectedRealm = computed(() => store.state.data.selectedRealm)
 
 const menus = computed(() => [
   {
@@ -47,12 +47,4 @@ const menus = computed(() => [
     // route: { name: 'refund_notify_rules' },
   },
 ])
-
-const onInputRealm = v => {
-  store.dispatch('data/select', v)
-}
-
-onMounted(() => {
-  store.dispatch('data/list')
-})
 </script>
