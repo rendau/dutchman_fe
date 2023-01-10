@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- toolbar -->
     <ac-page-toolbar>
       <ac-page-title>
         Edit Realm
@@ -14,9 +15,38 @@
     <div>
       <!-- form -->
       <div class="column items-stretch q-gutter-y-md">
+        <!-- name -->
         <div>
           <ac-label-value label="Name">
             <q-input v-model="data.name" dense outlined/>
+          </ac-label-value>
+        </div>
+
+        <!-- host -->
+        <div>
+          <ac-label-value label="Host">
+            <q-input v-model="data.val.host" dense outlined/>
+          </ac-label-value>
+        </div>
+
+        <!-- port -->
+        <div>
+          <ac-label-value label="Port">
+            <q-input dense outlined type="tel" v-model="data.val.port" mask="##########" unmasked-value/>
+          </ac-label-value>
+        </div>
+
+        <!-- timeout -->
+        <div>
+          <ac-label-value label="Timeout">
+            <q-input dense outlined v-model="data.val.timeout"/>
+          </ac-label-value>
+        </div>
+
+        <!-- cache_ttl -->
+        <div>
+          <ac-label-value label="Cache TTL">
+            <q-input dense outlined v-model="data.val.cache_ttl"/>
           </ac-label-value>
         </div>
       </div>
@@ -42,11 +72,11 @@
 </template>
 
 <script setup>
+import _ from 'lodash'
 import { useRouter } from 'vue-router'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useQuasar } from 'quasar'
-import { cns } from 'boot/cns'
 
 const router = useRouter()
 const store = useStore()
@@ -57,7 +87,12 @@ const selectedRealm = computed(() => store.getters['data/selectedRealm'])
 const data = ref({
   id: '',
   name: '',
-  host: '',
+  val: {
+    host: '',
+    port: '',
+    timeout: '',
+    cache_ttl: '',
+  },
 })
 
 const fetch = () => {
@@ -66,10 +101,7 @@ const fetch = () => {
     router.back()
     return
   }
-  data.value = {
-    id: selectedRealm.value.id,
-    name: selectedRealm.value.name,
-  }
+  data.value = _.cloneDeep(selectedRealm.value)
 }
 
 const onSubmit = () => {

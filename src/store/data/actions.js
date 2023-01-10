@@ -17,7 +17,13 @@ export async function get (ctx, id) {
 }
 
 export async function create (ctx, data) {
-  return this.$api.post('data', data).then(() => ctx.dispatch('list'))
+  return this.$api.post('data', data).then(createResp => {
+    ctx.dispatch('list').then(() => {
+      if (createResp.data?.id) {
+        return ctx.dispatch('select', createResp.data?.id)
+      }
+    })
+  })
 }
 
 export async function update (ctx, { id, data }) {
