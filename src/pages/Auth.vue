@@ -7,12 +7,12 @@
         </div>
 
         <div class="text-h5 text-center q-pt-xl">
-          Для входа в приложение<br/>
-          необходимо авторизоваться
+          To enter the application<br/>
+          you need to log in
         </div>
 
         <div class="q-pt-xl">
-          <q-btn no-caps label="Авторизоваться" color="positive" @click="onAuthClick"/>
+          <q-btn no-caps label="log in" color="positive" @click="onAuthClick"/>
         </div>
       </div>
     </div>

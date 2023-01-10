@@ -25,6 +25,10 @@ h1, h2, h3, h4, h5, h6 {
   background-color: $bg-color;
 }
 
+.br1 {
+  border: 1px dashed $separator-color;
+}
+
 .q-field {
   &.q-field--float {
     .q-field__label {

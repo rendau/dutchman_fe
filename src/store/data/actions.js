@@ -15,15 +15,15 @@ export function get (ctx, id) {
 }
 
 export function create (ctx, data) {
-  return this.$api.post('data', data)
+  return this.$api.post('data', data).then(() => ctx.dispatch('list'))
 }
 
 export function update (ctx, { id, data }) {
-  return this.$api.put(`data/${id}`, data)
+  return this.$api.put(`data/${id}`, data).then(() => ctx.dispatch('list'))
 }
 
 export function remove (ctx, id) {
-  return this.$api.delete(`data/${id}`)
+  return this.$api.delete(`data/${id}`).then(() => ctx.dispatch('list'))
 }
 
 export async function select (ctx, id) {

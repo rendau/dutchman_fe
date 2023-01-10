@@ -1,6 +1,6 @@
 <template>
   <q-layout view="LhH LpR LFR" class="app-bg-color relative-position">
-    <Header/>
+    <Header v-if="$store.getters['app/screenSmall']"/>
 
     <Drawer/>
 
