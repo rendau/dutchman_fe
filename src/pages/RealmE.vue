@@ -57,6 +57,7 @@ const selectedRealm = computed(() => store.getters['data/selectedRealm'])
 const data = ref({
   id: '',
   name: '',
+  host: '',
 })
 
 const fetch = () => {
@@ -73,7 +74,7 @@ const fetch = () => {
 
 const onSubmit = () => {
   loading.value = true
-  store.dispatch('data/update', { id: selectedRealm.value?.id, data: data.value }).then(() => {
+  store.dispatch('data/update', { id: data.value.id, data: data.value }).then(() => {
     $q.notify({ type: 'positive', message: 'Saved' })
     router.back()
   }).finally(() => {
@@ -82,14 +83,14 @@ const onSubmit = () => {
 }
 
 const onDelete = () => {
-  if (!selectedRealm.value?.id) return
+  if (!data.value.id) return
   $q.dialog({
     message: 'Do you really want to delete this record?',
     ok: { label: 'Yes', noCaps: true },
     cancel: { label: 'Cancel', flat: true, noCaps: true },
   }).onOk(() => {
     loading.value = true
-    store.dispatch('data/remove', selectedRealm.value?.id).then(() => {
+    store.dispatch('data/remove', data.value.id).then(() => {
       $q.notify({ type: 'positive', message: 'Deleted' })
       router.back()
     }).finally(() => {
