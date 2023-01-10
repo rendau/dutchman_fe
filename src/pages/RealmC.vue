@@ -56,9 +56,9 @@ const onSubmit = () => {
   loading.value = true
   store.dispatch('data/create', data.value).then(() => {
     $q.notify({ type: 'positive', message: 'Saved' })
+    router.back()
   }).finally(() => {
     loading.value = false
-    router.back()
   })
 }
 </script>

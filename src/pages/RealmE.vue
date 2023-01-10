@@ -6,7 +6,7 @@
       </ac-page-title>
 
       <div class="q-pl-md">
-        <ac-spn v-if="loading"/>
+        <ac-spn v-if="loading || $store.state.data.loading"/>
       </div>
     </ac-page-toolbar>
 
@@ -30,6 +30,10 @@
         </div>
 
         <div>
+          <q-btn no-caps color="negative" label="Delete" @click="onDelete"/>
+        </div>
+
+        <div>
           <q-btn no-caps flat color="primary" label="Cancel" @click="$router.back()"/>
         </div>
       </div>
@@ -38,29 +42,63 @@
 </template>
 
 <script setup>
-import { useRoute, useRouter } from 'vue-router'
-import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useQuasar } from 'quasar'
+import { cns } from 'boot/cns'
 
-const route = useRoute()
 const router = useRouter()
 const store = useStore()
 const $q = useQuasar()
 
 const loading = ref(false)
-const id = computed(() => route.params.id)
+const selectedRealm = computed(() => store.getters['data/selectedRealm'])
 const data = ref({
+  id: '',
   name: '',
 })
 
+const fetch = () => {
+  if (!selectedRealm.value) {
+    $q.notify({ type: 'negative', message: 'No realm selected' })
+    router.back()
+    return
+  }
+  data.value = {
+    id: selectedRealm.value.id,
+    name: selectedRealm.value.name,
+  }
+}
+
 const onSubmit = () => {
   loading.value = true
-  store.dispatch('data/update', { id: id.value, data: data.value }).then(() => {
+  store.dispatch('data/update', { id: selectedRealm.value?.id, data: data.value }).then(() => {
     $q.notify({ type: 'positive', message: 'Saved' })
+    router.back()
   }).finally(() => {
     loading.value = false
-    router.back()
   })
 }
+
+const onDelete = () => {
+  if (!selectedRealm.value?.id) return
+  $q.dialog({
+    message: 'Do you really want to delete this record?',
+    ok: { label: 'Yes', noCaps: true },
+    cancel: { label: 'Cancel', flat: true, noCaps: true },
+  }).onOk(() => {
+    loading.value = true
+    store.dispatch('data/remove', selectedRealm.value?.id).then(() => {
+      $q.notify({ type: 'positive', message: 'Deleted' })
+      router.back()
+    }).finally(() => {
+      loading.value = false
+    })
+  })
+}
+
+watch(() => store.state.data.selectedRealm, () => fetch())
+
+onMounted(() => fetch())
 </script>
