@@ -2,7 +2,7 @@
   <div>
     <ac-page-toolbar>
       <ac-page-title>
-        {{ creating ? 'Create Realm' : 'Edit Realm' }}
+        Edit Realm
       </ac-page-title>
 
       <div class="q-pl-md">
@@ -50,20 +50,13 @@ const $q = useQuasar()
 
 const loading = ref(false)
 const id = computed(() => route.params.id)
-const creating = computed(() => !id.value)
 const data = ref({
   name: '',
 })
 
 const onSubmit = () => {
   loading.value = true
-  let pr
-  if (creating.value) {
-    pr = store.dispatch('data/create', data.value)
-  } else {
-    pr = store.dispatch('data/update', { id: id.value, data: data.value })
-  }
-  pr.then(() => {
+  store.dispatch('data/update', { id: id.value, data: data.value }).then(() => {
     $q.notify({ type: 'positive', message: 'Saved' })
   }).finally(() => {
     loading.value = false

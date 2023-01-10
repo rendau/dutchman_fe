@@ -2,7 +2,7 @@
   <div>
     <ac-page-toolbar>
       <ac-page-title>
-        {{ creating ? 'Create Realm' : 'Edit Realm' }}
+        Create Realm
       </ac-page-title>
 
       <div class="q-pl-md">
@@ -38,32 +38,23 @@
 </template>
 
 <script setup>
-import { useRoute, useRouter } from 'vue-router'
-import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { useQuasar } from 'quasar'
 
-const route = useRoute()
 const router = useRouter()
 const store = useStore()
 const $q = useQuasar()
 
 const loading = ref(false)
-const id = computed(() => route.params.id)
-const creating = computed(() => !id.value)
 const data = ref({
   name: '',
 })
 
 const onSubmit = () => {
   loading.value = true
-  let pr
-  if (creating.value) {
-    pr = store.dispatch('data/create', data.value)
-  } else {
-    pr = store.dispatch('data/update', { id: id.value, data: data.value })
-  }
-  pr.then(() => {
+  store.dispatch('data/create', data.value).then(() => {
     $q.notify({ type: 'positive', message: 'Saved' })
   }).finally(() => {
     loading.value = false
