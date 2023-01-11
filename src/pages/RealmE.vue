@@ -14,42 +14,42 @@
     <!-- body -->
     <div>
       <!-- form -->
-      <div class="column items-stretch q-gutter-y-md">
+      <ac-input-group>
         <!-- name -->
         <div>
-          <ac-label-value label="Name">
+          <ac-label-input label="Name">
             <q-input v-model="data.name" dense outlined/>
-          </ac-label-value>
+          </ac-label-input>
         </div>
 
         <!-- host -->
         <div>
-          <ac-label-value label="Host">
+          <ac-label-input label="Host">
             <q-input v-model="data.val.host" dense outlined/>
-          </ac-label-value>
+          </ac-label-input>
         </div>
 
         <!-- port -->
         <div>
-          <ac-label-value label="Port">
+          <ac-label-input label="Port">
             <q-input dense outlined type="tel" v-model="data.val.port" mask="##########" unmasked-value/>
-          </ac-label-value>
+          </ac-label-input>
         </div>
 
         <!-- timeout -->
         <div>
-          <ac-label-value label="Timeout">
+          <ac-label-input label="Timeout">
             <q-input dense outlined v-model="data.val.timeout"/>
-          </ac-label-value>
+          </ac-label-input>
         </div>
 
         <!-- cache_ttl -->
         <div>
-          <ac-label-value label="Cache TTL">
+          <ac-label-input label="Cache TTL">
             <q-input dense outlined v-model="data.val.cache_ttl"/>
-          </ac-label-value>
+          </ac-label-input>
         </div>
-      </div>
+      </ac-input-group>
 
       <div class="q-pt-lg q-pb-md"/>
 

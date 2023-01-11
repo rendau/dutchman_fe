@@ -5,7 +5,8 @@
     <Drawer/>
 
     <q-page-container>
-      <q-page class="q-pt-md q-pr-md q-pb-lg" style="padding-left: 20px">
+      <q-page class="q-pt-md q-pr-md q-pb-lg"
+              :style="{'padding-left': ($store.getters['app/screenSmall'] ? '15px' : '20px')}">
         <router-view/>
       </q-page>
     </q-page-container>

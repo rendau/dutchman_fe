@@ -15,9 +15,9 @@
       <!-- form -->
       <div class="column items-stretch q-gutter-y-md">
         <div>
-          <ac-label-value label="Name">
+          <ac-label-input label="Name">
             <q-input v-model="data.name" dense outlined/>
-          </ac-label-value>
+          </ac-label-input>
         </div>
       </div>
 
