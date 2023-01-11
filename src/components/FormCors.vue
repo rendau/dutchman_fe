@@ -3,8 +3,8 @@
     <!-- allow_origins -->
     <div>
       <ac-label-input label="Allow Origins">
-        <q-input :model-value="data.allow_origins" dense outlined
-                 @update:model-value="updateKey('allow_origins', $event)"/>
+        <InputStringArray :model-value="data.allow_origins"
+                          @update:model-value="updateKey('allow_origins', $event)"/>
       </ac-label-input>
     </div>
 
@@ -28,6 +28,7 @@
 
 <script setup>
 import _ from 'lodash'
+import InputStringArray from 'components/acs/InputStringArray.vue'
 
 const props = defineProps({
   data: { type: Object, default: () => ({}) },
