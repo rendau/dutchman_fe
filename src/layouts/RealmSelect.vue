@@ -8,12 +8,12 @@
             bg-color="blue-1"
             @update:model-value="onInput">
     <template v-slot:[slotName]>
-      <div v-close-popup class="fit q-pa-sm">
+      <div v-close-popup class="fit">
         <q-btn dense flat no-caps
                icon="add"
                label="Add Realm"
                color="positive"
-               class="fit"
+               class="fit q-py-sm"
                @click="onCreateClick"/>
       </div>
     </template>

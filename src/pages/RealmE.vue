@@ -51,6 +51,10 @@
         </div>
       </ac-input-group>
 
+      <div class="q-pt-lg"/>
+
+      <FormCors v-model:data="data.val.cors"/>
+
       <div class="q-pt-lg q-pb-md"/>
 
       <!-- actions -->
@@ -77,14 +81,13 @@ import { useRouter } from 'vue-router'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useQuasar } from 'quasar'
+import FormCors from 'components/FormCors.vue'
 
 const router = useRouter()
 const store = useStore()
 const $q = useQuasar()
 
-const loading = ref(false)
-const selectedRealm = computed(() => store.getters['data/selectedRealm'])
-const data = ref({
+const defaultData = () => ({
   id: '',
   name: '',
   val: {
@@ -92,8 +95,13 @@ const data = ref({
     port: '',
     timeout: '',
     cache_ttl: '',
+    cors: {},
   },
 })
+
+const loading = ref(false)
+const selectedRealm = computed(() => store.getters['data/selectedRealm'])
+const data = ref(defaultData())
 
 const fetch = () => {
   if (!selectedRealm.value) {
@@ -101,7 +109,7 @@ const fetch = () => {
     router.back()
     return
   }
-  data.value = _.cloneDeep(selectedRealm.value)
+  data.value = _.defaultsDeep(_.cloneDeep(selectedRealm.value), defaultData())
 }
 
 const onSubmit = () => {
