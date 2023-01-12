@@ -1,16 +1,39 @@
 <template>
-  <div class="rounded-borders br2 q-pa-sm" style="min-height: 40px;">
+  <div class="rounded-borders br2 q-px-sm q-py-xs cursor-pointer"
+       style="min-height: 40px;"
+       @click="onClick">
     <div class="row items-center q-gutter-y-xs q-gutter-x-sm">
-      <div>asd</div>
+      <div>
+        <q-chip v-for="item in modelValue" :key="item"
+                dense color="grey-11" icon="link" :ripple="false">
+          {{ item }}
+        </q-chip>
+      </div>
     </div>
   </div>
-  <!--  <q-input dense outlined>-->
-  <!--    hello-->
-  <!--  </q-input>-->
 </template>
 
 <script setup>
+import { useQuasar } from 'quasar'
+import DEditStringArray from 'components/DEditStringArray.vue'
+
+const $q = useQuasar()
+
 const props = defineProps({
-  data: { type: Array, default: () => [] },
+  modelValue: { type: Array, default: () => [] },
 })
+
+const emits = defineEmits()
+
+const onClick = () => {
+  $q.dialog({
+    component: DEditStringArray,
+    componentProps: {
+      data: props.modelValue,
+    },
+  }).onOk(data => {
+    console.log('daaaaa', data)
+    emits('update:model-value', data)
+  })
+}
 </script>
