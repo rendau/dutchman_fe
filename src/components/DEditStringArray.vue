@@ -4,7 +4,7 @@
       <div>
         <!-- toolbar -->
         <div>
-          <div class="row items-center q-px-md q-py-sm bg-grey-4">
+          <div class="row items-center q-px-sm q-py-xs bg-grey-4">
             <div class="text-h6 text-grey-7">
             </div>
 
@@ -14,7 +14,7 @@
 
             <div class="q-pr-sm"/>
 
-            <q-btn no-caps dense color="primary" class="q-px-sm" label="Save" @click="onSaveClick"/>
+            <q-btn no-caps dense color="primary" class="q-px-sm" label="Apply" @click="onSaveClick"/>
           </div>
         </div>
 

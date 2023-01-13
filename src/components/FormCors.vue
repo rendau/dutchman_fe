@@ -11,8 +11,8 @@
     <!-- allow_methods -->
     <div>
       <ac-label-input label="Allow Methods">
-        <q-input :model-value="data.allow_methods" dense outlined
-                 @update:model-value="updateKey('allow_methods', $event)"/>
+        <InputStringArray :model-value="data.allow_methods"
+                          @update:model-value="updateKey('allow_methods', $event)"/>
       </ac-label-input>
     </div>
 

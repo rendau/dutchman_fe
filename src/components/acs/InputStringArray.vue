@@ -1,11 +1,9 @@
 <template>
   <div class="rounded-borders br2 q-px-sm q-py-xs cursor-pointer"
-       style="min-height: 40px;"
-       @click="onClick">
+       style="min-height: 40px" @click="onClick">
     <div class="row items-center q-gutter-y-xs q-gutter-x-sm">
-      <div>
-        <q-chip v-for="item in modelValue" :key="item"
-                dense color="grey-11" text-color="black" :ripple="false">
+      <div v-for="item in modelValue" :key="item">
+        <q-chip dense color="grey-11" text-color="black" class="q-ma-none" :ripple="false">
           {{ item }}
         </q-chip>
       </div>

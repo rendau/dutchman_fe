@@ -5,10 +5,8 @@ export async function list (ctx) {
     ctx.commit('setRealms', realms)
     if (!ctx.state.selectedRealm && realms.length > 0) {
       return ctx.dispatch('select', realms[0].id)
-    } else {
-      ctx.commit('setLoading', false)
     }
-  }).catch(() => {
+  }).finally(() => {
     ctx.commit('setLoading', false)
   })
 }
