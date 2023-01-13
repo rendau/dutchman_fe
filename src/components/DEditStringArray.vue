@@ -1,9 +1,9 @@
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogHide">
-    <q-card style="height: 300px; width: 500px; max-width: 95vw" class="relative-position bg-white">
-      <div class="column no-wrap items-stretch fit">
+    <q-card style="width: 500px; max-width: 95vw" class="bg-white">
+      <div>
         <!-- toolbar -->
-        <div class="col-auto">
+        <div>
           <div class="row items-center q-px-md q-py-sm bg-grey-4">
             <div class="text-h6 text-grey-7">
             </div>
@@ -19,18 +19,20 @@
         </div>
 
         <!-- body -->
-        <div class="q-px-lg q-py-md relative-position col fit">
-          <div class="column no-wrap items-stretch q-gutter-y-sm">
-            <div v-for="(item, itemI) in d" :key="`item-${itemI}`">
-              <q-input v-model="d[itemI]" dense outlined>
-                <template #after>
-                  <q-btn dense flat icon="delete" color="negative" @click="onDeleteClick(itemI)"/>
-                </template>
-              </q-input>
-            </div>
+        <div style="height: 300px;" class="q-py-sm">
+          <div class="scroll fit q-px-lg q-py-md">
+            <div class="column no-wrap items-stretch q-gutter-y-sm">
+              <div v-for="(item, itemI) in d" :key="`item-${itemI}`">
+                <q-input v-model="d[itemI]" dense outlined>
+                  <template #after>
+                    <q-btn dense flat icon="delete" color="negative" @click="onDeleteClick(itemI)"/>
+                  </template>
+                </q-input>
+              </div>
 
-            <div class="row justify-center">
-              <q-btn no-caps color="positive" icon="add" label="Add item" @click="onAddItemClick"/>
+              <div class="row justify-center">
+                <q-btn no-caps color="positive" icon="add" label="Add item" @click="onAddItemClick"/>
+              </div>
             </div>
           </div>
         </div>

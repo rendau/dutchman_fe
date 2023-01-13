@@ -5,7 +5,7 @@
     <div class="row items-center q-gutter-y-xs q-gutter-x-sm">
       <div>
         <q-chip v-for="item in modelValue" :key="item"
-                dense color="grey-11" icon="link" :ripple="false">
+                dense color="grey-11" text-color="black" :ripple="false">
           {{ item }}
         </q-chip>
       </div>
@@ -32,7 +32,6 @@ const onClick = () => {
       data: props.modelValue,
     },
   }).onOk(data => {
-    console.log('daaaaa', data)
     emits('update:model-value', data)
   })
 }
