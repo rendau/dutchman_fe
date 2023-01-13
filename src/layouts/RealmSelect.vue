@@ -41,13 +41,4 @@ const onInput = v => {
 const onCreateClick = v => {
   router.push({ name: 'realm-create' })
 }
-
-onMounted(() => {
-  store.dispatch('data/list').then(() => {
-    let realms = store.state.data.realms
-    if (!selected.value && realms.length > 0) {
-      store.dispatch('data/select', realms[0].id)
-    }
-  })
-})
 </script>

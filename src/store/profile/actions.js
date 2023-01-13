@@ -19,6 +19,7 @@ export function refreshSinceAppStart ({ dispatch }) {
       return Promise.all([
         dispatch('dic/get', null, { root: true }),
         dispatch('config/get', null, { root: true }),
+        dispatch('data/list', null, { root: true }),
       ])
     }, err => {
       if (err.data?.code === cns.ErrNotAuthorized) {

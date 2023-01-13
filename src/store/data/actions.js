@@ -1,8 +1,14 @@
 export async function list (ctx) {
   ctx.commit('setLoading', true)
   return this.$api.get('data').then(resp => {
-    ctx.commit('setRealms', resp.data?.results || [])
-  }).finally(() => {
+    let realms = resp.data?.results || []
+    ctx.commit('setRealms', realms)
+    if (!ctx.state.selectedRealm && realms.length > 0) {
+      return ctx.dispatch('select', realms[0].id)
+    } else {
+      ctx.commit('setLoading', false)
+    }
+  }).catch(() => {
     ctx.commit('setLoading', false)
   })
 }
