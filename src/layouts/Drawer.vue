@@ -37,7 +37,7 @@
       <!-- menus -->
       <div class="col q-pt-xs">
         <q-list class="fit scroll-y">
-          <q-item-label header>Routes</q-item-label>
+          <q-item-label header>Route groups</q-item-label>
 
           <q-item v-for="m in menus" :key="`menu-${m.name}`" dense class="q-pl-md"
                   :to="m.route" active-class="bg-primary text-white">
