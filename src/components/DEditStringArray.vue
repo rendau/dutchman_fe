@@ -65,6 +65,10 @@ const onSaveClick = () => {
 }
 
 const onAddItemClick = () => {
+  if (d.value.indexOf('') > -1) {
+    $q.notify({ type: 'negative', message: 'Please fill in all items first' })
+    return
+  }
   d.value.push('')
 }
 

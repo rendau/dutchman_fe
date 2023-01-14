@@ -16,6 +16,22 @@
       </ac-label-input>
     </div>
 
+    <!-- allow_headers -->
+    <div>
+      <ac-label-input label="Allow Headers">
+        <InputStringArray :model-value="data.allow_headers"
+                          @update:model-value="updateKey('allow_headers', $event)"/>
+      </ac-label-input>
+    </div>
+
+    <!-- allow_credentials -->
+    <div>
+      <ac-label-input label="Allow Credentials">
+        <q-toggle :model-value="data.allow_credentials || false"
+                  @update:model-value="updateKey('allow_credentials', $event)"/>
+      </ac-label-input>
+    </div>
+
     <!-- max_age -->
     <div>
       <ac-label-input label="Max Age">

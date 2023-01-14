@@ -55,6 +55,10 @@
 
       <FormCors v-model:data="data.val.cors"/>
 
+      <div class="q-pt-lg"/>
+
+      <FormJwtValidation v-model:data="data.val.jwt_validation"/>
+
       <div class="q-pt-lg q-pb-md"/>
 
       <!-- actions -->
@@ -82,6 +86,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useQuasar } from 'quasar'
 import FormCors from 'components/FormCors.vue'
+import FormJwtValidation from 'components/FormJwtValidation.vue'
 
 const router = useRouter()
 const store = useStore()
@@ -96,6 +101,7 @@ const defaultData = () => ({
     timeout: '',
     cache_ttl: '',
     cors: {},
+    jwt_validation: {},
   },
 })
 
@@ -139,7 +145,11 @@ const onDelete = () => {
   })
 }
 
-watch(() => store.state.data.selectedRealm, () => fetch())
+watch(() => store.state.data.selectedRealm, v => {
+  if (v) {
+    fetch()
+  }
+})
 
 onMounted(() => fetch())
 </script>

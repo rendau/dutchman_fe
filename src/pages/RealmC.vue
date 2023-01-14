@@ -55,6 +55,31 @@ const data = ref({
     port: '8080',
     timeout: '120s',
     cache_ttl: '300s',
+    cors: {
+      allow_origins: ['*'],
+      allow_methods: [
+        'GET',
+        'HEAD',
+        'POST',
+        'PUT',
+        'DELETE',
+        'CONNECT',
+        'OPTIONS',
+        'TRACE',
+        'PATCH',
+      ],
+      allow_headers: ['*'],
+      expose_headers: ['*'],
+      allow_credentials: true,
+      max_age: '120h',
+    },
+    jwt_validation: {
+      alg: 'RS256',
+      jwk_url: '',
+      disable_jwk_security: true,
+      cache: true,
+      cache_duration: "300",
+    },
   },
 })
 
