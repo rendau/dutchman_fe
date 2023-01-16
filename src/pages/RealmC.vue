@@ -86,6 +86,7 @@ const data = ref({
 })
 
 const onSubmit = () => {
+  if (loading.value) return
   loading.value = true
   store.dispatch('data/create', data.value).then(() => {
     $q.notify({ type: 'positive', message: 'Saved' })

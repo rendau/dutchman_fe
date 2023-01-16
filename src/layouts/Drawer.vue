@@ -26,20 +26,9 @@
 
       <!-- menus -->
       <div class="col q-pt-xs">
-        <q-list class="fit scroll-y">
-          <q-item-label header>Route groups</q-item-label>
-
-          <q-item v-for="m in menus" :key="`menu-${m.name}`" dense class="q-pl-md"
-                  :to="m.route" active-class="bg-primary text-white">
-            <q-item-section side style="color: inherit">
-              <q-icon name="lan" size="1.1rem"/>
-            </q-item-section>
-
-            <q-item-section class="q-py-xs q-pl-xs">
-              {{ m.label }}
-            </q-item-section>
-          </q-item>
-        </q-list>
+        <div class="fit scroll-y">
+          <AppList/>
+        </div>
       </div>
 
       <!-- logout -->
@@ -57,36 +46,16 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
 import { useStore } from 'vuex'
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
-import RealmSelect from './RealmSelect.vue'
 import { cns } from 'boot/cns'
+import RealmSelect from 'layouts/RealmSelect.vue'
+import AppList from 'layouts/AppList.vue'
 
 const store = useStore()
 const router = useRouter()
 const $q = useQuasar()
-
-const selectedRealm = computed(() => store.state.data.selectedRealm)
-
-const menus = computed(() => [
-  {
-    label: 'Menu1',
-    icon: 'home',
-    // route: { name: 'orders' },
-  },
-  {
-    label: 'Menu2',
-    icon: 'label',
-    // route: { name: 'prvs' },
-  },
-  {
-    label: 'Menu3',
-    icon: 'label',
-    // route: { name: 'refund_notify_rules' },
-  },
-])
 
 const onLogout = () => {
   $q.dialog({

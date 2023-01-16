@@ -121,6 +121,7 @@ const fetch = () => {
 }
 
 const onSubmit = () => {
+  if (loading.value) return
   loading.value = true
   store.dispatch('data/update', { id: data.value.id, data: data.value }).then(() => {
     $q.notify({ type: 'positive', message: 'Saved' })
@@ -131,6 +132,7 @@ const onSubmit = () => {
 }
 
 const onDelete = () => {
+  if (loading.value) return
   if (!data.value.id) return
   $q.dialog({
     message: 'Do you really want to delete this record?',

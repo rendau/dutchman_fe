@@ -32,6 +32,7 @@ const routes = [
     children: [
       { path: 'realm/create', name: 'realm-create', component: () => import('pages/RealmC.vue') },
       { path: 'realm/edit', name: 'realm-edit', component: () => import('pages/RealmE.vue') },
+      { path: 'app/create', name: 'app-create', component: () => import('pages/AppC.vue') },
       { path: '', component: () => import('pages/Index.vue') },
     ],
   },
