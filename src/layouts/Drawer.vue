@@ -16,17 +16,7 @@
       <!-- realm select -->
       <div class="col-auto q-pt-sm">
         <div class="q-pl-md q-pr-sm q-pt-xs">
-          <div class="row items-center no-wrap">
-            <div class="col">
-              <RealmSelect/>
-            </div>
-
-            <div class="col-auto q-pl-sm">
-              <q-btn dense flat color="primary" @click="$router.push({name: 'realm-edit'})">
-                <q-icon name="settings" size="1.2rem"/>
-              </q-btn>
-            </div>
-          </div>
+          <RealmSelect/>
         </div>
       </div>
 
