@@ -25,39 +25,39 @@
         <!-- host -->
         <div>
           <ac-label-input label="Host">
-            <q-input v-model="data.val.host" dense outlined/>
+            <q-input v-model="data.val.general.host" dense outlined/>
           </ac-label-input>
         </div>
 
         <!-- port -->
         <div>
           <ac-label-input label="Port">
-            <q-input dense outlined type="tel" v-model="data.val.port" mask="##########" unmasked-value/>
+            <q-input dense outlined type="tel" v-model="data.val.general.port" mask="##########" unmasked-value/>
           </ac-label-input>
         </div>
 
         <!-- timeout -->
         <div>
           <ac-label-input label="Timeout">
-            <q-input dense outlined v-model="data.val.timeout"/>
+            <q-input dense outlined v-model="data.val.general.timeout"/>
           </ac-label-input>
         </div>
 
         <!-- cache_ttl -->
         <div>
           <ac-label-input label="Cache TTL">
-            <q-input dense outlined v-model="data.val.cache_ttl"/>
+            <q-input dense outlined v-model="data.val.general.cache_ttl"/>
           </ac-label-input>
         </div>
       </ac-input-group>
 
       <div class="q-pt-lg"/>
 
-      <FormCors v-model:data="data.val.cors"/>
+      <FormCors v-model:data="data.val.general.cors"/>
 
       <div class="q-pt-lg"/>
 
-      <FormJwtValidation v-model:data="data.val.jwt_validation"/>
+      <FormJwtValidation v-model:data="data.val.general.jwt_validation"/>
 
       <div class="q-pt-lg q-pb-md"/>
 
@@ -96,12 +96,14 @@ const defaultData = () => ({
   id: '',
   name: '',
   val: {
-    host: '',
-    port: '',
-    timeout: '',
-    cache_ttl: '',
-    cors: {},
-    jwt_validation: {},
+    general: {
+      host: '',
+      port: '',
+      timeout: '',
+      cache_ttl: '',
+      cors: {},
+      jwt_validation: {},
+    },
   },
 })
 
