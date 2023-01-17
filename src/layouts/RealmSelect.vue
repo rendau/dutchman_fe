@@ -45,7 +45,9 @@ const loading = computed(() => store.state.data.loading)
 const slotName = computed(() => (ops.value.length > 0 ? 'after-options' : 'no-option'))
 
 const onInput = v => {
-  store.dispatch('data/select', v)
+  router.push('/').then(() => {
+    store.dispatch('data/select', v)
+  })
 }
 
 const onCreateClick = v => {

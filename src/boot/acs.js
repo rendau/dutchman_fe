@@ -12,6 +12,7 @@ import TableTotalCounter from 'components/acs/TableTotalCounter'
 import TrNoRows from 'components/acs/TrNoRows'
 import LabelInput from 'components/acs/LabelInput.vue'
 import InputGroup from 'components/acs/InputGroup.vue'
+import InputStringArray from 'components/acs/InputStringArray.vue'
 
 export default ({ app }) => {
   app.component('ac-spn', Spn)
@@ -28,5 +29,6 @@ export default ({ app }) => {
   app.component('ac-tr-no-rows', TrNoRows)
   app.component('ac-label-input', LabelInput)
   app.component('ac-input-group', InputGroup)
+  app.component('ac-input-string-array', InputStringArray)
 
 }

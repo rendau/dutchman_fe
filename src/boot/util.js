@@ -45,6 +45,13 @@ let util = {
     if (_.isNil(v)) return vIfNil || 0
     return v.toLocaleString() + (ext || '')
   },
+  concatUrlPath (base, ...args) {
+    let paths = args.join('/').replace(/\/+/g, '/')
+    if (base) {
+      return (new URL(paths, base)).href
+    }
+    return paths
+  },
 
   lFind (list, idV, idAttr = 'id') {
     if (_.isString(list)) {

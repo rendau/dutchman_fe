@@ -3,7 +3,7 @@
     <!-- toolbar -->
     <ac-page-toolbar>
       <ac-page-title>
-        Edit Realm
+        {{ isCreating ? 'Create' : 'Edit' }} Realm
       </ac-page-title>
 
       <div class="q-pl-md">
@@ -18,20 +18,34 @@
         <!-- name -->
         <div>
           <ac-label-input label="Name">
-            <q-input v-model="data.name" dense outlined/>
+            <q-input :autofocus="isCreating" v-model="data.name" dense outlined/>
+          </ac-label-input>
+        </div>
+
+        <!-- conf_file_name -->
+        <div>
+          <ac-label-input label="Conf filename">
+            <q-input v-model="data.val.general.conf_file_name" dense outlined/>
+          </ac-label-input>
+        </div>
+
+        <!-- public_base_url -->
+        <div>
+          <ac-label-input label="Public base-url">
+            <q-input v-model="data.val.general.public_base_url" dense outlined/>
           </ac-label-input>
         </div>
 
         <!-- host -->
         <div>
-          <ac-label-input label="Host">
+          <ac-label-input label="Listen host">
             <q-input v-model="data.val.general.host" dense outlined/>
           </ac-label-input>
         </div>
 
         <!-- port -->
         <div>
-          <ac-label-input label="Port">
+          <ac-label-input label="Listen port">
             <q-input dense outlined type="tel" v-model="data.val.general.port" mask="##########" unmasked-value/>
           </ac-label-input>
         </div>
@@ -67,7 +81,7 @@
           <q-btn no-caps color="primary" label="Save" @click="onSubmit"/>
         </div>
 
-        <div>
+        <div v-if="!isCreating">
           <q-btn no-caps color="negative" label="Delete" @click="onDelete"/>
         </div>
 
@@ -92,26 +106,63 @@ const router = useRouter()
 const store = useStore()
 const $q = useQuasar()
 
+const props = defineProps({
+  mode: { type: String, default: 'create' },
+})
+
 const defaultData = () => ({
   id: '',
   name: '',
   val: {
     general: {
-      host: '',
-      port: '',
-      timeout: '',
-      cache_ttl: '',
-      cors: {},
-      jwt_validation: {},
+      conf_file_name: '',
+      host: '0.0.0.0',
+      port: '8080',
+      timeout: '120s',
+      cache_ttl: '300s',
+      public_base_url: '',
+      cors: {
+        enabled: true,
+        allow_origins: ['*'],
+        allow_methods: [
+          'GET',
+          'HEAD',
+          'POST',
+          'PUT',
+          'DELETE',
+          'CONNECT',
+          'OPTIONS',
+          'TRACE',
+          'PATCH',
+        ],
+        allow_headers: ['*'],
+        expose_headers: ['*'],
+        allow_credentials: true,
+        max_age: '120h',
+      },
+      jwt_validation: {
+        enabled: true,
+        alg: 'RS256',
+        jwk_url: '',
+        disable_jwk_security: true,
+        cache: true,
+        cache_duration: '300',
+      },
     },
   },
 })
 
 const loading = ref(false)
-const selectedRealm = computed(() => store.getters['data/selectedRealm'])
 const data = ref(defaultData())
+const selectedRealm = computed(() => store.getters['data/selectedRealm'])
+const isCreating = computed(() => props.mode === 'create')
 
 const fetch = () => {
+  if (isCreating.value) {
+    data.value = defaultData()
+    return
+  }
+
   if (!selectedRealm.value) {
     $q.notify({ type: 'negative', message: 'No realm selected' })
     router.back()
@@ -122,8 +173,19 @@ const fetch = () => {
 
 const onSubmit = () => {
   if (loading.value) return
+  if (!data.value.name) {
+    $q.notify({ type: 'negative', message: 'Name is required' })
+    return
+  }
   loading.value = true
-  store.dispatch('data/update', { id: data.value.id, data: data.value }).then(() => {
+  data.value.val.general.public_base_url = _.trimEnd(data.value.val.general.public_base_url, '/')
+  let pr = null
+  if (isCreating.value) {
+    pr = store.dispatch('data/create', data.value)
+  } else {
+    pr = store.dispatch('data/update', { id: data.value.id, data: data.value })
+  }
+  pr.then(() => {
     $q.notify({ type: 'positive', message: 'Saved' })
     router.back()
   }).finally(() => {
@@ -149,10 +211,8 @@ const onDelete = () => {
   })
 }
 
-watch(() => store.state.data.selectedRealm, v => {
-  if (v) {
-    fetch()
-  }
+watch(() => isCreating.value, v => {
+  fetch()
 })
 
 onMounted(() => fetch())

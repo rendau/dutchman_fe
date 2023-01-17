@@ -1,6 +1,6 @@
 <template>
   <q-list>
-    <q-item-label header>
+    <q-item-label header class="q-pb-sm">
       <div class="row no-wrap items-center">
         <div class="col">
           Applications
@@ -12,8 +12,8 @@
       </div>
     </q-item-label>
 
-    <q-item v-for="app in realmApps" :key="`menu-${app.name}`" dense class="q-pl-md"
-            active-class="bg-primary text-white">
+    <q-item v-for="app in realmApps" :key="`app-${app.id}`" dense class="q-pl-md"
+            :to="{name: 'app', params: {id: app.id}}" active-class="bg-primary text-white">
       <q-item-section side style="color: inherit">
         <q-icon name="lan" size="1.1rem"/>
       </q-item-section>

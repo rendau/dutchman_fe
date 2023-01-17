@@ -5,7 +5,7 @@
             @update:model-value="$store.commit('app/setDrawer', $event)">
     <div class="fit relative-position column no-wrap items-stretch">
       <!-- header/logo -->
-      <div class="col-auto">
+      <div class="col-auto cursor-pointer" @click="router.push('/')">
         <div class="row no-wrap flex-center text-primary q-pt-md">
           <q-icon name="token" size="25px"/>
 

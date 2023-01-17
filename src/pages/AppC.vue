@@ -14,9 +14,17 @@
     <div>
       <!-- form -->
       <div class="column items-stretch q-gutter-y-md">
+        <!-- name -->
         <div>
           <ac-label-input label="Name">
             <q-input v-model="data.name" dense outlined/>
+          </ac-label-input>
+        </div>
+
+        <!-- path -->
+        <div>
+          <ac-label-input label="Path prefix">
+            <q-input v-model="data.path" dense outlined/>
           </ac-label-input>
         </div>
       </div>
@@ -41,7 +49,7 @@
 import { useRouter } from 'vue-router'
 import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
-import { useQuasar } from 'quasar'
+import { uid, useQuasar } from 'quasar'
 
 const router = useRouter()
 const store = useStore()
@@ -49,7 +57,9 @@ const $q = useQuasar()
 
 const loading = ref(false)
 const data = ref({
+  id: uid(),
   name: '',
+  path: '',
 })
 
 const realm = computed(() => store.getters['data/selectedRealm'])
