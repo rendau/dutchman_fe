@@ -26,17 +26,19 @@
 
 <script setup>
 import _ from 'lodash'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { computed } from 'vue'
 import { useStore } from 'vuex'
 
 const route = useRoute()
+const router = useRouter()
 const store = useStore()
 
-const id = computed(() => (route.params.id || ''))
+const id = computed(() => (route.params.app_id || ''))
 const realm = computed(() => store.getters['data/selectedRealm'])
-const app = computed(() => (_.find(realm.value.val.apps, { id: id.value }) || {}))
+const app = computed(() => (_.find(store.getters['data/selectedRealmApps'], { id: id.value }) || {}))
 
 const onEditClick = () => {
+  router.push({ name: 'app-edit', params: { app_id: id.value } })
 }
 </script>

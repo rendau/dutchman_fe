@@ -45,12 +45,20 @@ let util = {
     if (_.isNil(v)) return vIfNil || 0
     return v.toLocaleString() + (ext || '')
   },
-  concatUrlPath (base, ...args) {
-    let paths = args.join('/').replace(/\/+/g, '/')
-    if (base) {
-      return (new URL(paths, base)).href
+  normalizePath (v) {
+    if (!v) return ''
+    v = v.replace(/\/+/g, '/')
+    if (v.startsWith('/')) {
+      return v
     }
-    return paths
+    return '/' + v
+  },
+  concatUrlPath (base, ...args) {
+    let res = this.normalizePath(args.join('/'))
+    if (base) {
+      return (new URL(res, base)).href
+    }
+    return res
   },
 
   lFind (list, idV, idAttr = 'id') {

@@ -154,7 +154,7 @@ const defaultData = () => ({
 
 const loading = ref(false)
 const data = ref(defaultData())
-const selectedRealm = computed(() => store.getters['data/selectedRealm'])
+const realm = computed(() => store.getters['data/selectedRealm'])
 const isCreating = computed(() => props.mode === 'create')
 
 const fetch = () => {
@@ -163,12 +163,12 @@ const fetch = () => {
     return
   }
 
-  if (!selectedRealm.value) {
+  if (!realm.value) {
     $q.notify({ type: 'negative', message: 'No realm selected' })
     router.back()
     return
   }
-  data.value = _.defaultsDeep(_.cloneDeep(selectedRealm.value), defaultData())
+  data.value = _.defaultsDeep(_.cloneDeep(realm.value), defaultData())
 }
 
 const onSubmit = () => {
