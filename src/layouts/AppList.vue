@@ -13,7 +13,7 @@
     </q-item-label>
 
     <q-item v-for="app in realmApps" :key="`app-${app.id}`" dense class="q-pl-md"
-            :to="{name: 'app', params: {id: app.id}}" active-class="bg-primary text-white">
+            :to="{name: 'app', params: {app_id: app.id}}" active-class="bg-primary text-white">
       <q-item-section side style="color: inherit">
         <q-icon name="lan" size="1.1rem"/>
       </q-item-section>

@@ -78,7 +78,6 @@ const data = ref(defaultData())
 const id = computed(() => (route.params.app_id || ''))
 const realm = computed(() => store.getters['data/selectedRealm'])
 const realmApps = computed(() => store.getters['data/selectedRealmApps'])
-const app = computed(() => (_.find(realmApps, { id: id.value }) || {}))
 const isCreating = computed(() => props.mode === 'create')
 
 const fetch = () => {
@@ -87,12 +86,13 @@ const fetch = () => {
     return
   }
 
-  if (!app.value) {
+  let app = _.find(realmApps.value, { id: id.value }) || {}
+  if (!app) {
     $q.notify({ type: 'negative', message: 'App not found' })
     router.back()
     return
   }
-  data.value = _.defaultsDeep(_.cloneDeep(app.value), defaultData())
+  data.value = _.defaults(_.clone(app), defaultData())
 }
 
 const onSubmit = () => {
@@ -102,14 +102,14 @@ const onSubmit = () => {
     return
   }
   loading.value = true
-  if (data.value.path) {
-    data.value.path = _.trimStart(util.normalizePath(data.value.path), '/')
-    data.value.path = '/' + data.value.path
+  data.value.path = util.normalizePath(data.value.path)
+  let apps = [...realmApps.value]
+  if (isCreating.value) {
+    apps.push(data.value)
+  } else {
+    apps = _.map(apps, a => (a.id === data.value.id ? data.value : a))
   }
-  data.value.path = _.trimStart(data.value.path, '/')
-  let apps = [...realmApps.value, data.value]
-  let val = _.assign({}, realm.value.val, { apps })
-  store.dispatch('data/update', { id: realm.value.id, data: { val } }).then(() => {
+  updateRealm(apps).then(() => {
     $q.notify({ type: 'positive', message: 'Saved' })
     router.back()
   }).finally(() => {
@@ -118,21 +118,27 @@ const onSubmit = () => {
 }
 
 const onDelete = () => {
-  // if (loading.value) return
-  // if (!data.value.id) return
-  // $q.dialog({
-  //   message: 'Do you really want to delete this record?',
-  //   ok: { label: 'Yes', noCaps: true },
-  //   cancel: { label: 'Cancel', flat: true, noCaps: true },
-  // }).onOk(() => {
-  //   loading.value = true
-  //   store.dispatch('data/remove', data.value.id).then(() => {
-  //     $q.notify({ type: 'positive', message: 'Deleted' })
-  //     router.back()
-  //   }).finally(() => {
-  //     loading.value = false
-  //   })
-  // })
+  if (loading.value) return
+  if (!data.value.id) return
+  $q.dialog({
+    message: 'Do you really want to delete this record?',
+    ok: { label: 'Yes', noCaps: true },
+    cancel: { label: 'Cancel', flat: true, noCaps: true },
+  }).onOk(() => {
+    loading.value = true
+    let apps = _.reject(realmApps.value, a => a.id === data.value.id)
+    updateRealm(apps).then(() => {
+      $q.notify({ type: 'positive', message: 'Deleted' })
+      router.back()
+    }).finally(() => {
+      loading.value = false
+    })
+  })
+}
+
+const updateRealm = async apps => {
+  let val = _.assign({}, realm.value.val, { apps })
+  return store.dispatch('data/update', { id: realm.value.id, data: { val } })
 }
 
 watch(() => isCreating.value, v => {

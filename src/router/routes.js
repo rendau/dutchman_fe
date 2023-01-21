@@ -33,8 +33,19 @@ const routes = [
       { path: 'realm/create', name: 'realm-create', component: () => import('pages/RealmE.vue') },
       { path: 'realm/edit', name: 'realm-edit', component: () => import('pages/RealmE.vue'), props: { mode: 'edit' } },
       { path: 'app/create', name: 'app-create', component: () => import('pages/AppE.vue') },
-      { path: 'app/:app_id/edit', name: 'app-edit', component: () => import('pages/AppE.vue'), props: { mode: 'edit' } },
-      { path: 'app/:app_id', name: 'app', component: () => import('pages/App.vue') },
+      {
+        path: 'app/:app_id',
+        name: 'app',
+        component: () => import('pages/App.vue'),
+        children: [
+          {
+            path: 'edit',
+            name: 'app-edit',
+            component: () => import('pages/AppE.vue'),
+            props: { mode: 'edit' },
+          },
+        ],
+      },
       { path: '', component: () => import('pages/Index.vue') },
     ],
   },

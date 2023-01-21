@@ -47,11 +47,7 @@ let util = {
   },
   normalizePath (v) {
     if (!v) return ''
-    v = v.replace(/\/+/g, '/')
-    if (v.startsWith('/')) {
-      return v
-    }
-    return '/' + v
+    return _.trim(v.replace(/\/+/g, '/'), '/')
   },
   concatUrlPath (base, ...args) {
     let res = this.normalizePath(args.join('/'))

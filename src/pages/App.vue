@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="$route.meta.rid === rid">
     <ac-page-toolbar>
       <ac-page-title>
         <div class="text-bold">{{ app.name }}</div>
@@ -22,17 +22,23 @@
       hello
     </div>
   </div>
+
+  <router-view v-else/>
 </template>
 
 <script setup>
 import _ from 'lodash'
 import { useRoute, useRouter } from 'vue-router'
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { useStore } from 'vuex'
 
 const route = useRoute()
 const router = useRouter()
 const store = useStore()
+
+const props = defineProps({
+  rid: {},
+})
 
 const id = computed(() => (route.params.app_id || ''))
 const realm = computed(() => store.getters['data/selectedRealm'])
@@ -41,4 +47,12 @@ const app = computed(() => (_.find(store.getters['data/selectedRealmApps'], { id
 const onEditClick = () => {
   router.push({ name: 'app-edit', params: { app_id: id.value } })
 }
+
+watch(() => route.name, (v, ov) => {
+  if (route.meta.rid === props.rid) {
+    if (!app.value.id) {
+      router.back()
+    }
+  }
+})
 </script>
