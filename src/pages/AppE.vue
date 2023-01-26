@@ -13,7 +13,7 @@
     <!-- body -->
     <div>
       <!-- form -->
-      <div class="column items-stretch q-gutter-y-md">
+      <ac-input-group>
         <!-- name -->
         <div>
           <ac-label-input label="Name">
@@ -27,7 +27,11 @@
             <q-input v-model="data.path" dense outlined/>
           </ac-label-input>
         </div>
-      </div>
+      </ac-input-group>
+
+      <div class="q-pt-lg"/>
+
+      <FormBackend v-model:data="data.backend"/>
 
       <div class="q-pt-lg q-pb-md"/>
 
@@ -56,6 +60,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import { uid, useQuasar } from 'quasar'
 import { util } from 'boot/util'
+import FormBackend from 'components/FormBackend.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -70,6 +75,7 @@ const defaultData = () => ({
   id: uid(),
   name: '',
   path: '',
+  backend: {},
 })
 
 const loading = ref(false)

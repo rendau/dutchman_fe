@@ -45,6 +45,14 @@ let util = {
     if (_.isNil(v)) return vIfNil || 0
     return v.toLocaleString() + (ext || '')
   },
+  parseUrl (v) {
+    if (!v) return null
+    try {
+      return new URL(v)
+    } catch (e) {
+      return null
+    }
+  },
   normalizePath (v) {
     if (!v) return ''
     return _.trim(v.replace(/\/+/g, '/'), '/')
@@ -52,7 +60,11 @@ let util = {
   concatUrlPath (base, ...args) {
     let res = this.normalizePath(args.join('/'))
     if (base) {
-      return (new URL(res, base)).href
+      try {
+        return (new URL(res, base)).href
+      } catch (e) {
+        return base + '/' + res
+      }
     }
     return res
   },
