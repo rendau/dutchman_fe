@@ -1,17 +1,17 @@
 <template>
   <ac-input-group label="Backend">
-    <!-- host -->
+    <!-- custom_path -->
     <div>
-      <ac-label-input label="Host (without path)">
-        <q-input :model-value="data.host" dense outlined
-                 @update:model-value="updateKey('host', $event)"/>
+      <ac-label-input label="Custom path">
+        <q-toggle :model-value="data.custom_path || false"
+                  @update:model-value="updateKey('custom_path', $event)"/>
       </ac-label-input>
     </div>
 
     <!-- path -->
     <div>
-      <ac-label-input label="Path (only)">
-        <q-input :model-value="data.path" dense outlined
+      <ac-label-input label="Path">
+        <q-input :model-value="isCustomPath ? data.path : default_path" dense outlined :disable="!isCustomPath"
                  @update:model-value="updateKey('path', $event)"/>
       </ac-label-input>
     </div>
@@ -21,24 +21,20 @@
 <script setup>
 import _ from 'lodash'
 import { util } from 'boot/util'
+import { computed } from 'vue'
 
 const props = defineProps({
+  default_path: { type: String, default: '' },
   data: { type: Object, default: () => ({}) },
 })
 
 const emits = defineEmits()
 
+const isCustomPath = computed(() => props.data.custom_path || false)
+
 const updateKey = (key, value) => {
   let obj = { [key]: value }
-  if (key === 'host') {
-    let u = util.parseUrl(value)
-    if (u) {
-      obj[key] = u.origin
-      if (u.pathname && u.pathname !== '/' && !props.data.path) {
-        obj['path'] = util.normalizePath(u.pathname)
-      }
-    }
-  } else if (key === 'path') {
+  if (key === 'path') {
     obj[key] = util.normalizePath(value)
   }
   emits('update:data', _.assign({}, props.data, obj))
