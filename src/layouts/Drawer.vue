@@ -9,7 +9,7 @@
         <div class="row no-wrap flex-center text-primary q-pt-md">
           <q-icon name="token" size="25px"/>
 
-          <div class="text-h6 q-pl-sm">Dutchman</div>
+          <div class="text-h6 q-pl-sm non-selectable">Dutchman</div>
         </div>
       </div>
 

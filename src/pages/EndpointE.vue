@@ -1,8 +1,9 @@
 <template>
   <div>
+    <!-- toolbar -->
     <ac-page-toolbar>
       <ac-page-title>
-        {{ isCreating ? 'Create' : 'Edit' }} Application
+        {{ isCreating ? 'Create' : 'Edit' }} Endpoint
       </ac-page-title>
 
       <div class="q-pl-md">
@@ -14,16 +15,16 @@
     <div>
       <!-- form -->
       <ac-input-group>
-        <!-- name -->
+        <!-- method -->
         <div>
-          <ac-label-input label="Name">
-            <q-input v-model="data.name" dense outlined/>
+          <ac-label-input label="Method">
+            <q-select v-model="data.method" dense outlined :options="['GET', 'POST', 'PUT', 'PATCH', 'DELETE']"/>
           </ac-label-input>
         </div>
 
         <!-- path -->
         <div>
-          <ac-label-input label="Path prefix">
+          <ac-label-input label="Path">
             <q-input v-model="data.path" dense outlined/>
           </ac-label-input>
         </div>
@@ -31,7 +32,7 @@
 
       <div class="q-pt-lg"/>
 
-      <FormBackendBase v-model:data="data.backend_base"/>
+      <FormBackend v-model:data="data.backend" :default_path="data.path"/>
 
       <div class="q-pt-lg q-pb-md"/>
 
@@ -60,7 +61,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import { uid, useQuasar } from 'quasar'
 import { util } from 'boot/util'
-import FormBackendBase from 'components/FormBackendBase.vue'
+import FormBackend from 'components/FormBackend.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -73,18 +74,18 @@ const props = defineProps({
 
 const defaultData = id => ({
   id: id || '',
-  name: '',
+  method: 'GET',
   path: '',
-  backend_base: {},
-  endpoints: [],
 })
 
 const loading = ref(false)
 const data = ref(defaultData())
 
-const id = computed(() => (route.params.app_id || ''))
 const realm = computed(() => store.getters['data/selectedRealm'])
 const realmApps = computed(() => store.getters['data/selectedRealmApps'])
+const app_id = computed(() => (route.params.app_id || ''))
+const app = computed(() => (_.find(realmApps.value, { id: app_id.value }) || {}))
+const id = computed(() => (route.params.endpoint_id || ''))
 const isCreating = computed(() => props.mode === 'create')
 
 const fetch = () => {
@@ -93,30 +94,30 @@ const fetch = () => {
     return
   }
 
-  let app = _.find(realmApps.value, { id: id.value }) || {}
-  if (!app) {
-    $q.notify({ type: 'negative', message: 'App not found' })
+  let endpoint = _.find(app.value.endpoints || [], { id: id.value }) || {}
+  if (!endpoint) {
+    $q.notify({ type: 'negative', message: 'Endpoint not found' })
     router.back()
     return
   }
-  data.value = _.defaults(_.clone(app), defaultData())
+  data.value = _.defaults(_.clone(endpoint), defaultData())
 }
 
 const onSubmit = () => {
   if (loading.value) return
-  if (!data.value.name) {
-    $q.notify({ type: 'negative', message: 'Name is required' })
+  if (!data.value.method) {
+    $q.notify({ type: 'negative', message: 'Method is required' })
     return
   }
   loading.value = true
   data.value.path = util.normalizePath(data.value.path)
-  let apps = [...realmApps.value]
+  let endpoints = [...(app.value.endpoints || [])]
   if (isCreating.value) {
-    apps.push(data.value)
+    endpoints.push(data.value)
   } else {
-    apps = _.map(apps, a => (a.id === data.value.id ? data.value : a))
+    endpoints = _.map(endpoints, a => (a.id === data.value.id ? data.value : a))
   }
-  updateRealm(apps).then(() => {
+  updateRealm(endpoints).then(() => {
     $q.notify({ type: 'positive', message: 'Saved' })
     router.back()
   }).finally(() => {
@@ -133,8 +134,8 @@ const onDelete = () => {
     cancel: { label: 'Cancel', flat: true, noCaps: true },
   }).onOk(() => {
     loading.value = true
-    let apps = _.reject(realmApps.value, a => a.id === data.value.id)
-    updateRealm(apps).then(() => {
+    let endpoints = _.reject(app.value.endpoints, x => x.id === data.value.id)
+    updateRealm(endpoints).then(() => {
       $q.notify({ type: 'positive', message: 'Deleted' })
       router.back()
     }).finally(() => {
@@ -143,7 +144,9 @@ const onDelete = () => {
   })
 }
 
-const updateRealm = async apps => {
+const updateRealm = async endpoints => {
+  let newApp = _.assign({}, app.value, { endpoints })
+  let apps = _.map(realmApps.value, a => (a.id === app.value.id ? newApp : a))
   let val = _.assign({}, realm.value.val, { apps })
   return store.dispatch('data/update', { id: realm.value.id, data: { val } })
 }

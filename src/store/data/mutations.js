@@ -9,7 +9,3 @@ export function setSelectedRealm (state, v) {
 export function setLoading (state, v) {
   state.loading = v
 }
-
-export function setSelectedEndpoint (state, v) {
-  state.selectedEndpoint = v
-}

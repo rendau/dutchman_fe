@@ -23,8 +23,23 @@
     </div>
 
     <div class="col-auto q-pl-sm">
-      <q-btn dense flat color="primary" @click="$router.push({name: 'realm-edit'})">
-        <q-icon name="settings" size="1.2rem"/>
+      <q-btn dense flat color="primary">
+        <q-icon name="more_horiz" size="1.3rem"/>
+
+        <q-menu>
+          <q-list class="text-primary">
+            <q-item clickable v-close-popup @click="$router.push({name: 'realm-edit'})">
+              <q-item-section>
+                Edit
+              </q-item-section>
+
+              <q-item-section avatar>
+                <q-icon name="edit" size=".9rem"/>
+              </q-item-section>
+            </q-item>
+            <!--            <q-separator />-->
+          </q-list>
+        </q-menu>
       </q-btn>
     </div>
   </div>

@@ -10,9 +10,9 @@
           <span class="text-bold">/{{ app.path }}</span>
         </div>
 
-        <div v-if="app.backend?.host" class="q-pt-xs text-subtitle2">
+        <div v-if="app.backend_base?.host" class="q-pt-xs text-subtitle2">
           <div class="inline-block text-grey-8" style="min-width: 90px">Backend Url:</div>
-          <span class="text-grey-6">{{ $u.concatUrlPath(app.backend?.host || '', app.backend?.path) }}</span>
+          <span class="text-grey-6">{{ $u.concatUrlPath(app.backend_base?.host || '', app.backend_base?.path) }}</span>
         </div>
       </ac-page-title>
 

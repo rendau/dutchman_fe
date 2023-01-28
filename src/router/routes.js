@@ -38,12 +38,9 @@ const routes = [
         name: 'app',
         component: () => import('pages/App.vue'),
         children: [
-          {
-            path: 'edit',
-            name: 'app-edit',
-            component: () => import('pages/AppE.vue'),
-            props: { mode: 'edit' },
-          },
+          { path: 'edit', name: 'app-edit', component: () => import('pages/AppE.vue'), props: { mode: 'edit' } },
+          { path: 'endpoint/create', name: 'endpoint-create', component: () => import('pages/EndpointE.vue') },
+          { path: 'endpoint/:endpoint_id', name: 'endpoint-edit', component: () => import('pages/EndpointE.vue'), props: { mode: 'edit' } },
         ],
       },
       { path: '', component: () => import('pages/Index.vue') },
