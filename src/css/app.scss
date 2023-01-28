@@ -33,6 +33,18 @@ h1, h2, h3, h4, h5, h6 {
   border: 1px solid $grey-5;
 }
 
+.min-width {
+  width: 1%;
+}
+
+.q-table {
+  tbody {
+    td {
+      font-size: inherit;
+    }
+  }
+}
+
 .q-field {
   &.q-field--float {
     .q-field__label {

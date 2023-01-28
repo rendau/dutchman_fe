@@ -1,7 +1,7 @@
 <template>
   <tr>
     <td colspan="100%" class="text-center text-grey-6">
-      нет записей
+      no rows
     </td>
   </tr>
 </template>

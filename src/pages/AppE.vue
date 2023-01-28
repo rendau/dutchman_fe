@@ -76,6 +76,7 @@ const defaultData = () => ({
   name: '',
   path: '',
   backend: {},
+  endpoints: [],
 })
 
 const loading = ref(false)

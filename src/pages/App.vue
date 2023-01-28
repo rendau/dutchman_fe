@@ -25,7 +25,7 @@
 
     <!-- body -->
     <div>
-      hello
+      <EndpointList :app="app"/>
     </div>
   </div>
 
@@ -37,6 +37,7 @@ import _ from 'lodash'
 import { useRoute, useRouter } from 'vue-router'
 import { computed, watch } from 'vue'
 import { useStore } from 'vuex'
+import EndpointList from 'components/endpoint/List'
 
 const route = useRoute()
 const router = useRouter()
