@@ -1,5 +1,5 @@
 <template>
-  <ac-input-group label="CORS">
+  <ac-input-group label="CORS Settings">
     <!-- enabled -->
     <div>
       <ac-label-input label="Enabled">

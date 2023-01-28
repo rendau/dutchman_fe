@@ -36,42 +36,21 @@
           </ac-label-input>
         </div>
 
-        <!-- host -->
-        <div>
-          <ac-label-input label="Listen host">
-            <q-input v-model="data.val.general.host" dense outlined/>
-          </ac-label-input>
-        </div>
-
-        <!-- port -->
-        <div>
-          <ac-label-input label="Listen port">
-            <q-input dense outlined type="tel" v-model="data.val.general.port" mask="##########" unmasked-value/>
-          </ac-label-input>
-        </div>
-
         <!-- timeout -->
         <div>
           <ac-label-input label="Timeout">
             <q-input dense outlined v-model="data.val.general.timeout"/>
           </ac-label-input>
         </div>
-
-        <!-- cache_ttl -->
-        <div>
-          <ac-label-input label="Cache TTL">
-            <q-input dense outlined v-model="data.val.general.cache_ttl"/>
-          </ac-label-input>
-        </div>
       </ac-input-group>
 
       <div class="q-pt-lg"/>
 
-      <FormCors v-model:data="data.val.general.cors"/>
+      <FormCorsConf v-model:data="data.val.general.cors_conf"/>
 
       <div class="q-pt-lg"/>
 
-      <FormJwtValidation v-model:data="data.val.general.jwt_validation"/>
+      <FormJwtConf v-model:data="data.val.general.jwt_conf"/>
 
       <div class="q-pt-lg q-pb-md"/>
 
@@ -99,8 +78,8 @@ import { useRouter } from 'vue-router'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useQuasar } from 'quasar'
-import FormCors from 'components/FormCors.vue'
-import FormJwtValidation from 'components/FormJwtValidation.vue'
+import FormCorsConf from 'components/FormCorsConf.vue'
+import FormJwtConf from 'components/FormJwtConf.vue'
 
 const router = useRouter()
 const store = useStore()
@@ -116,12 +95,9 @@ const defaultData = () => ({
   val: {
     general: {
       conf_file_name: '',
-      host: '0.0.0.0',
-      port: '8080',
-      timeout: '120s',
-      cache_ttl: '300s',
       public_base_url: '',
-      cors: {
+      timeout: '120s',
+      cors_conf: {
         enabled: true,
         allow_origins: ['*'],
         allow_methods: [
@@ -140,8 +116,7 @@ const defaultData = () => ({
         allow_credentials: true,
         max_age: '120h',
       },
-      jwt_validation: {
-        enabled: true,
+      jwt_conf: {
         alg: 'RS256',
         jwk_url: '',
         disable_jwk_security: true,

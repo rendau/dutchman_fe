@@ -10,7 +10,7 @@
 
     <!-- path -->
     <div>
-      <ac-label-input label="Path prefix (only)">
+      <ac-label-input label="Path (only)">
         <q-input :model-value="data.path" dense outlined
                  @update:model-value="updateKey('path', $event)"/>
       </ac-label-input>
