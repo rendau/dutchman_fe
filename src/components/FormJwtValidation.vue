@@ -8,48 +8,27 @@
       </ac-label-input>
     </div>
 
-    <!-- alg -->
+    <!-- roles -->
     <div>
-      <ac-label-input label="Algorithm">
-        <q-select dense options-dense outlined :disable="!enabled"
-                  :model-value="data.alg"
-                  :options="[
-                      'HS256', 'HS384', 'HS512', 'RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'ES512', 'PS256', 'PS384', 'PS512', 'EdDSA'
-                  ]"
-                  @update:model-value="updateKey('alg', $event)"/>
+      <ac-label-input label="Roles">
+        <ac-input-string-array :model-value="data.roles" :disable="!enabled"
+                               @update:model-value="updateKey('roles', $event)"/>
       </ac-label-input>
     </div>
 
-    <!-- jwk_url -->
+    <!-- roles_key -->
     <div>
-      <ac-label-input label="Jwk Url">
-        <q-input :model-value="data.jwk_url" dense outlined :disable="!enabled"
-                 @update:model-value="updateKey('jwk_url', $event)"/>
+      <ac-label-input label="Roles key">
+        <q-input :model-value="data.roles_key" dense outlined :disable="!enabled"
+                 @update:model-value="updateKey('roles_key', $event)"/>
       </ac-label-input>
     </div>
 
-    <!-- disable_jwk_security -->
+    <!-- roles_key_is_nested -->
     <div>
-      <ac-label-input label="Disable Jwk Security">
-        <q-toggle :model-value="data.disable_jwk_security || false" :disable="!enabled"
-                  @update:model-value="updateKey('disable_jwk_security', $event)"/>
-      </ac-label-input>
-    </div>
-
-    <!-- cache -->
-    <div>
-      <ac-label-input label="Cache">
-        <q-toggle :model-value="data.cache || false" :disable="!enabled"
-                  @update:model-value="updateKey('cache', $event)"/>
-      </ac-label-input>
-    </div>
-
-    <!-- cache_duration -->
-    <div>
-      <ac-label-input label="Cache Duration">
-        <q-input :model-value="data.cache_duration" dense outlined :disable="!enabled"
-                 suffix="sec"
-                 @update:model-value="updateKey('cache_duration', $event)"/>
+      <ac-label-input label="Roles key is nested">
+        <q-toggle :model-value="data.roles_key_is_nested || false" :disable="!enabled"
+                  @update:model-value="updateKey('roles_key_is_nested', $event)"/>
       </ac-label-input>
     </div>
   </ac-input-group>

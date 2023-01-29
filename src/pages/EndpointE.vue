@@ -34,6 +34,14 @@
 
       <FormBackend v-model:data="data.backend" :default_path="data.path"/>
 
+      <div class="q-pt-lg"/>
+
+      <FormJwtValidation v-model:data="data.jwt_validation"/>
+
+      <div class="q-pt-lg"/>
+
+      <FormIPValidation v-model:data="data.ip_validation"/>
+
       <div class="q-pt-lg q-pb-md"/>
 
       <!-- actions -->
@@ -62,6 +70,8 @@ import { useStore } from 'vuex'
 import { uid, useQuasar } from 'quasar'
 import { util } from 'boot/util'
 import FormBackend from 'components/FormBackend.vue'
+import FormJwtValidation from 'components/FormJwtValidation.vue'
+import FormIPValidation from 'components/FormIPValidation.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -76,6 +86,17 @@ const defaultData = id => ({
   id: id || '',
   method: 'GET',
   path: '',
+  backend: {},
+  jwt_validation: {
+    enabled: false,
+    roles: [],
+    roles_key: 'roles',
+    roles_key_is_nested: false,
+  },
+  ip_validation: {
+    enabled: false,
+    allowed_ips: [],
+  },
 })
 
 const loading = ref(false)

@@ -40,6 +40,14 @@
         <td class="text-no-wrap text-subtitle2">
           /{{ item.path }}
         </td>
+
+        <td class="text-center min-width">
+          <div class="row no-wrap items-center justify-end q-gutter-sm">
+            <span v-if="item.ip_validation?.enabled" class="text-caption text-bold text-blue-grey-4">IP</span>
+
+            <q-icon v-if="item.jwt_validation?.enabled" name="lock" color="blue-grey-4" size=".85rem"/>
+          </div>
+        </td>
       </tr>
 
       <tr v-if="!items.length">
