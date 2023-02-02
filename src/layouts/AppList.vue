@@ -18,7 +18,7 @@
         <q-icon name="lan" size="1.1rem"/>
       </q-item-section>
 
-      <q-item-section class="q-py-xs q-pl-xs">
+      <q-item-section class="q-py-xs q-pl-xs" :class="{'text-grey-6': !app.active}">
         {{ app.name }}
       </q-item-section>
     </q-item>
@@ -33,7 +33,6 @@ import { useRouter } from 'vue-router'
 const store = useStore()
 const router = useRouter()
 
-const realm = computed(() => store.getters['data/selectedRealm'])
 const realmApps = computed(() => store.getters['data/selectedRealmApps'])
 
 const onAddClick = () => {

@@ -14,6 +14,13 @@
     <div>
       <!-- form -->
       <ac-input-group>
+        <!-- active -->
+        <div>
+          <ac-label-input label="Active">
+            <q-toggle v-model="data.active"/>
+          </ac-label-input>
+        </div>
+
         <!-- name -->
         <div>
           <ac-label-input label="Name">
@@ -44,10 +51,6 @@
         <div v-if="!isCreating">
           <q-btn no-caps color="negative" label="Delete" @click="onDelete"/>
         </div>
-
-        <div>
-          <q-btn no-caps flat color="primary" label="Cancel" @click="$router.back()"/>
-        </div>
       </div>
     </div>
   </div>
@@ -73,6 +76,7 @@ const props = defineProps({
 
 const defaultData = id => ({
   id: id || '',
+  active: true,
   name: '',
   path: '',
   backend_base: {},

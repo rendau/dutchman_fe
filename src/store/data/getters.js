@@ -9,5 +9,11 @@ export function selectedRealmBaseUrl (state) {
 }
 
 export function selectedRealmApps (state) {
-  return _.sortBy(state.selectedRealm?.val?.apps || [], 'name')
+  return _.sortBy(
+    state.selectedRealm?.val?.apps || [],
+    [
+      x => !x.active,
+      x => _.lowerCase(x.name),
+    ],
+  )
 }

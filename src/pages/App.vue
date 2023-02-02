@@ -2,7 +2,15 @@
   <div v-if="$route.meta.rid === rid">
     <ac-page-toolbar>
       <ac-page-title>
-        <div class="text-bold">{{ app.name }}</div>
+        <div class="text-bold">
+          <div class="row no-wrap items-center">
+            <div>{{ app.name }}</div>
+
+<!--            <div v-if="!app.active" class="inline-block q-ml-md text-body2 text-weight-regular">not active</div>-->
+            <q-chip v-if="!app.active" dense label="not active"
+                    color="grey-4" text-color="grey-8" class="q-ml-lg q-px-sm" size=".6rem"/>
+          </div>
+        </div>
 
         <div class="q-pt-sm text-subtitle2">
           <div class="inline-block text-grey-8" style="min-width: 90px">Public Url:</div>

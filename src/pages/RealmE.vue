@@ -63,10 +63,6 @@
         <div v-if="!isCreating">
           <q-btn no-caps color="negative" label="Delete" @click="onDelete"/>
         </div>
-
-        <div>
-          <q-btn no-caps flat color="primary" label="Cancel" @click="$router.back()"/>
-        </div>
       </div>
     </div>
   </div>

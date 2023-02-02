@@ -32,8 +32,9 @@
     <q-markup-table flat bordered wrap-cells dense class="relative-position">
       <tbody>
       <tr v-for="(item, itemI) in items" :key="`item-${itemI}-${item.path}`"
-          class="cursor-pointer" @click="onItemClick(item)">
-        <td class="text-right text-no-wrap min-width text-grey-8">
+          class="cursor-pointer" :class="{'text-grey-6': !item.active}"
+          @click="onItemClick(item)">
+        <td class="text-right text-no-wrap text-weight-light min-width">
           {{ item.method }}
         </td>
 
@@ -73,7 +74,14 @@ const props = defineProps({
   app: { type: Object, default: () => ({}) },
 })
 
-const items = computed(() => _.sortBy(props.app.endpoints || [], 'path'))
+const items = computed(() => _.sortBy(
+    props.app.endpoints || [],
+    [
+      x => !x.active,
+      'path',
+      'method',
+    ],
+))
 
 const onAddClick = () => {
   router.push({ name: 'endpoint-create' })
