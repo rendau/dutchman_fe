@@ -61,6 +61,10 @@ export async function select (ctx, id) {
   return ctx.dispatch('get', id)
 }
 
+export async function deploy (ctx, data) {
+  return this.$api.post('data/deploy', data)
+}
+
 export async function generateConf (ctx) {
   let realm = ctx.state.selectedRealm?.val
   if (!realm) {
@@ -149,5 +153,5 @@ export async function generateConf (ctx) {
     })
   })
 
-  return JSON.stringify(res, null, 4)
+  return res
 }

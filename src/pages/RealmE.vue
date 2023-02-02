@@ -22,13 +22,6 @@
           </ac-label-input>
         </div>
 
-        <!-- conf_file_name -->
-        <div>
-          <ac-label-input label="Conf filename">
-            <q-input v-model="data.val.general.conf_file_name" dense outlined/>
-          </ac-label-input>
-        </div>
-
         <!-- public_base_url -->
         <div>
           <ac-label-input label="Public base-url">
@@ -51,6 +44,10 @@
       <div class="q-pt-lg"/>
 
       <FormJwtConf v-model:data="data.val.general.jwt_conf"/>
+
+      <div class="q-pt-lg"/>
+
+      <FormDeployConf v-model:data="data.val.general.deploy_conf"/>
 
       <div class="q-pt-lg q-pb-md"/>
 
@@ -76,6 +73,7 @@ import { useStore } from 'vuex'
 import { useQuasar } from 'quasar'
 import FormCorsConf from 'components/FormCorsConf.vue'
 import FormJwtConf from 'components/FormJwtConf.vue'
+import FormDeployConf from 'components/FormDeployConf.vue'
 
 const router = useRouter()
 const store = useStore()
@@ -90,9 +88,13 @@ const defaultData = () => ({
   name: '',
   val: {
     general: {
-      conf_file_name: '',
       public_base_url: '',
       timeout: '120s',
+      deploy_conf: {
+        conf_file: '',
+        url: '',
+        method: 'POST',
+      },
       cors_conf: {
         enabled: true,
         allow_origins: ['*'],
