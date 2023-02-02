@@ -41,7 +41,7 @@
       <ac-label-input label="Cache Duration">
         <q-input :model-value="data.cache_duration" dense outlined
                  suffix="sec"
-                 @update:model-value="updateKey('cache_duration', $event)"/>
+                 @update:model-value="onUpdateCacheDuration"/>
       </ac-label-input>
     </div>
   </ac-input-group>
@@ -50,6 +50,9 @@
 <script setup>
 import _ from 'lodash'
 import { computed } from 'vue'
+import { useQuasar } from 'quasar'
+
+const $q = useQuasar()
 
 const props = defineProps({
   data: { type: Object, default: () => ({}) },
@@ -61,5 +64,15 @@ const enabled = computed(() => props.data.enabled || false)
 
 const updateKey = (key, value) => {
   emits('update:data', _.assign({}, props.data, { [key]: value }))
+}
+
+const onUpdateCacheDuration = value => {
+  let v = parseInt(value) || -1
+  if (v < 0) {
+    $q.notify({ message: 'Cache duration must be an integer', color: 'negative', })
+    return
+  }
+
+  updateKey('cache_duration', v)
 }
 </script>

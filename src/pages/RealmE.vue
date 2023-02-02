@@ -118,7 +118,7 @@ const defaultData = () => ({
         jwk_url: '',
         disable_jwk_security: true,
         cache: true,
-        cache_duration: '300',
+        cache_duration: 300,
       },
     },
   },
