@@ -90,7 +90,10 @@ const defaultData = id => ({
   active: true,
   method: 'GET',
   path: '',
-  backend: {},
+  backend: {
+    custom_path: false,
+    path: '',
+  },
   jwt_validation: {
     enabled: false,
     roles: [],

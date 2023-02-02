@@ -27,7 +27,7 @@
         <q-icon name="more_horiz" size="1.3rem"/>
 
         <q-menu>
-          <q-list class="text-primary">
+          <q-list class="text-primary" dense>
             <q-item clickable v-close-popup @click="$router.push({name: 'realm-edit'})">
               <q-item-section>
                 Edit
@@ -37,7 +37,18 @@
                 <q-icon name="edit" size=".9rem"/>
               </q-item-section>
             </q-item>
-            <!--            <q-separator />-->
+
+            <q-separator/>
+
+            <q-item clickable v-close-popup @click="onPreviewClick">
+              <q-item-section>
+                Preview JSON
+              </q-item-section>
+
+              <q-item-section avatar>
+                <q-icon name="remove_red_eye" size=".9rem"/>
+              </q-item-section>
+            </q-item>
           </q-list>
         </q-menu>
       </q-btn>
@@ -50,9 +61,12 @@ import { computed } from 'vue'
 import { useStore } from 'vuex'
 import { util } from 'boot/util'
 import { useRouter } from 'vue-router'
+import { useQuasar } from 'quasar'
+import DShowJson from 'components/DShowJson.vue'
 
 const router = useRouter()
 const store = useStore()
+const $q = useQuasar()
 
 const ops = computed(() => util.lOps(store.state.data.realms))
 const selected = computed(() => store.state.data.selectedRealm)
@@ -67,5 +81,16 @@ const onInput = v => {
 
 const onCreateClick = v => {
   router.push({ name: 'realm-create' })
+}
+
+const onPreviewClick = () => {
+  store.dispatch('data/generateConf').then(data => {
+    $q.dialog({
+      component: DShowJson,
+      componentProps: {
+        data,
+      },
+    })
+  })
 }
 </script>

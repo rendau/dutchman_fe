@@ -79,7 +79,10 @@ const defaultData = id => ({
   active: true,
   name: '',
   path: '',
-  backend_base: {},
+  backend_base: {
+    host: '',
+    path: '',
+  },
   endpoints: [],
 })
 

@@ -108,7 +108,6 @@ const defaultData = () => ({
           'PATCH',
         ],
         allow_headers: ['*'],
-        expose_headers: ['*'],
         allow_credentials: true,
         max_age: '120h',
       },
@@ -139,7 +138,7 @@ const fetch = () => {
     router.back()
     return
   }
-  data.value = _.defaultsDeep(_.cloneDeep(realm.value), defaultData())
+  data.value = _.defaults(_.cloneDeep(realm.value), defaultData())
 }
 
 const onSubmit = () => {

@@ -68,6 +68,9 @@ let util = {
     }
     return res
   },
+  coalesceArray (v, dv = undefined) {
+    return (v || []).length ? v : dv
+  },
 
   lFind (list, idV, idAttr = 'id') {
     if (_.isString(list)) {

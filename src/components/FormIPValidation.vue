@@ -1,5 +1,5 @@
 <template>
-  <ac-input-group label="IP Validation">
+  <ac-input-group label="IP Validation (by X-Real-Ip header)">
     <!-- enabled -->
     <div>
       <ac-label-input label="Enabled">
