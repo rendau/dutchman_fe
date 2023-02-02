@@ -12,6 +12,7 @@
     <div>
       <ac-label-input label="Allowed IPs">
         <ac-input-string-array :model-value="data.allowed_ips" :disable="!enabled"
+                                emptyLabel="Any IPs"
                                @update:model-value="updateKey('allowed_ips', $event)"/>
       </ac-label-input>
     </div>

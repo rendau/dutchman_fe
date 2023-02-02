@@ -10,6 +10,10 @@
             {{ item }}
           </q-chip>
         </div>
+
+        <div v-if="!modelValue.length && emptyLabel" class="text-grey-6">
+          {{ emptyLabel }}
+        </div>
       </div>
     </div>
   </div>
@@ -23,6 +27,7 @@ const $q = useQuasar()
 
 const props = defineProps({
   modelValue: { type: Array, default: () => [] },
+  emptyLabel: { type: String, default: '' },
   disable: { type: Boolean, default: false },
 })
 

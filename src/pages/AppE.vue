@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ac-page-toolbar>
+    <ac-page-toolbar bb>
       <ac-page-title>
         {{ isCreating ? 'Create' : 'Edit' }} Application
       </ac-page-title>

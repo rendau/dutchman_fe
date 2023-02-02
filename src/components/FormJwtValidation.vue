@@ -12,6 +12,7 @@
     <div>
       <ac-label-input label="Roles">
         <ac-input-string-array :model-value="data.roles" :disable="!enabled"
+                               emptyLabel="Any roles"
                                @update:model-value="updateKey('roles', $event)"/>
       </ac-label-input>
     </div>

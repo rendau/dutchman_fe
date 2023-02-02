@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- toolbar -->
-    <ac-page-toolbar>
+    <ac-page-toolbar bb>
       <ac-page-title>
         {{ isCreating ? 'Create' : 'Edit' }} Endpoint
       </ac-page-title>
