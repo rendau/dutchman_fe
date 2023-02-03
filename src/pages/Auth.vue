@@ -1,38 +1,51 @@
 <template>
-  <div class="fullscreen flex flex-center q-pa-md">
-    <div>
-      <div class="column no-wrap items-center">
+  <div class="fullscreen flex flex-center q-pa-lg">
+    <q-card class="relative-position" style="width: 370px">
+      <div class="column items-stretch q-gutter-y-md q-pa-xl">
         <div>
-          <q-icon name="lock_person" color="grey-6" size="100px"/>
+          <div class="column flex-center q-gutter-y-sm">
+            <div>
+              <q-icon name="lock_person" color="grey-6" size="100px"/>
+            </div>
+
+            <div class="text-h4 text-grey-7">
+              Log in
+            </div>
+          </div>
         </div>
 
-        <div class="text-h5 text-center q-pt-xl">
-          To enter the application<br/>
-          you need to log in
+        <div class="self-center" style="width: 250px">
+          <q-input type="password"
+                   v-model="password"
+                   label="Пароль"
+                   @keyup.enter="onSubmit"/>
         </div>
 
-        <div class="q-pt-xl">
-          <q-btn no-caps label="log in" color="positive" @click="onAuthClick"/>
+        <div class="self-center">
+          <div class="q-pt-lg"/>
+
+          <q-btn no-caps label="log in" color="positive" @click="onSubmit"/>
         </div>
       </div>
-    </div>
+
+      <ac-spinner :showing="loading"/>
+    </q-card>
   </div>
 </template>
 
 <script setup>
-import { onMounted, onUnmounted } from 'vue'
+import { ref } from 'vue'
 import { useQuasar } from 'quasar'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n/index'
 import { cns } from 'boot/cns'
 
 const $q = useQuasar()
-const { t } = useI18n()
 const store = useStore()
 const router = useRouter()
 
-let authWindow = null
+const loading = ref(false)
+const password = ref('')
 
 const messageH = event => {
   if (event.source === authWindow) {
@@ -58,23 +71,45 @@ const messageH = event => {
 
     if (authWindow) {
       authWindow.close()
-      authWindow = null
     }
   }
 }
 
-const onAuthClick = () => {
-  if (authWindow) {
-    authWindow.close()
+const onSubmit = () => {
+  if (password.value === '') {
+    $q.notify({ type: 'negative', message: 'Enter the password', })
+    return
   }
-  authWindow = window.open(cns.AccountAuthUrl)
+
+  loading.value = true
+  store.dispatch('profile/auth', password.value).then(() => {
+    store.dispatch('profile/refresh', true).then(() => {
+      if (store.getters['profile/isAuthed']) {
+        router.push('/')
+      } else {
+        $q.notify({ type: 'negative', message: 'Fail to authorize' })
+      }
+    }, err => {
+      $q.notify({ type: 'negative', message: err.data.desc })
+    })
+  }, err => {
+    $q.notify({ type: 'negative', message: err.data.desc, })
+  }).finally(() => {
+    loading.value = false
+  })
+
+  // this.loading = true
+  // this.$store.dispatch('profile/auth', {
+  //   password: this.password,
+  // }).then(() => {
+  //   this.$router.push({ name: this.$cns.indexRouteName }).catch(() => {})
+  // },err => {
+  //   this.$q.notify({
+  //     type: 'negative',
+  //     message: err.data.desc,
+  //   })
+  // }).then(() => {
+  //   this.loading = false
+  // })
 }
-
-onMounted(() => {
-  window.addEventListener('message', messageH)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('message', messageH)
-})
 </script>

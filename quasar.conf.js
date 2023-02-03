@@ -11,25 +11,10 @@ const { configure } = require('quasar/wrappers')
 module.exports = configure(function (ctx) {
   const envObj = {
     API_URL: '',
-    ACCOUNT_API_URL: '',
-    ACCOUNT_AUTH_URL: '',
-    ACCOUNT_CABINET_URL: '',
   }
 
   if (process.env.API_URL) {
     envObj.API_URL = process.env.API_URL
-  }
-
-  if (process.env.ACCOUNT_API_URL) {
-    envObj.ACCOUNT_API_URL = process.env.ACCOUNT_API_URL
-  }
-
-  if (process.env.ACCOUNT_CABINET_URL) {
-    envObj.ACCOUNT_CABINET_URL = process.env.ACCOUNT_CABINET_URL
-  }
-
-  if (process.env.ACCOUNT_AUTH_URL) {
-    envObj.ACCOUNT_AUTH_URL = process.env.ACCOUNT_AUTH_URL
   }
 
   return {

@@ -1,25 +1,43 @@
 import { cns } from 'boot/cns'
-import { authTokenAccess } from 'src/store/profile/getters'
 
 let ctxLoadSinceAppStartPr = null
 
-export function refresh ({ state, dispatch }, nr401 = false) {
-  console.log('start refresh-profile')
-  return this.$api.get('profile', { baseURL: cns.AccountApiUrl, nr401 }).then(resp => {
-    // console.log('profile', resp.data)
-
-    return dispatch('set', resp.data).then(() => resp)
+export function auth (ctx, password) {
+  console.log('auth')
+  return this.$api.post('profile/auth', {
+    password: password,
+  }, { nfa: true, nl: true }).then(resp => {
+    ctx.commit('setToken', {
+      access: resp.data?.access_token || '',
+      refresh: resp.data?.refresh_token || '',
+    })
   })
 }
 
-export function refreshSinceAppStart ({ dispatch }) {
+export function refreshAccessToken (ctx) {
+  console.log('refreshing access token')
+  return this.$api.post('profile/auth/token', {
+    refresh_token: ctx.getters['authTokenRefresh'],
+  }, { nfa: true }).then(resp => {
+    ctx.commit('setTokenAccess', resp.data?.access_token || '')
+  })
+}
+
+export function refresh (ctx, nr401 = false) {
+  console.log('start refresh-profile')
+  return this.$api.get('profile', { nr401 }).then(resp => {
+    return ctx.dispatch('set', resp.data).then(() => resp)
+  })
+}
+
+export function refreshSinceAppStart (ctx) {
   if (!ctxLoadSinceAppStartPr) {
     console.log('start refresh-profile since app-start')
-    ctxLoadSinceAppStartPr = dispatch('refresh', true).then(() => {
+    ctxLoadSinceAppStartPr = ctx.dispatch('refresh', true).then(() => {
       return Promise.all([
-        dispatch('dic/get', null, { root: true }),
-        dispatch('config/get', null, { root: true }),
-        dispatch('data/list', null, { root: true }),
+        ctx.dispatch('dic/get', null, { root: true }),
+        ctx.dispatch('config/get', null, { root: true }),
+        ctx.dispatch('data/list', null, { root: true }),
       ])
     }, err => {
       if (err.data?.code === cns.ErrNotAuthorized) {
@@ -38,38 +56,16 @@ export function resetCtxLoadSinceAppStartPr () {
   ctxLoadSinceAppStartPr = null
 }
 
-export function logout ({ dispatch, getters }) {
-  let pr
-  if (getters['authTokenAccess']) {
-    pr = this.$api.post('profile/logout', null, {
-      baseURL: cns.AccountApiUrl,
-      nr401: true,
-      nfa: true,
-      nl: true,
-    }).catch(() => {})
-  } else {
-    pr = Promise.resolve()
-  }
-  return pr.then(() => dispatch('set', null))
+export function logout (ctx) {
+  return ctx.dispatch('set', null)
 }
 
-export function refreshAccessToken ({ getters, commit }) {
-  console.log('refreshing access token')
-  return this.$api.post('profile/auth/token', {
-    refresh_token: getters['authTokenRefresh'],
-  }, { baseURL: cns.AccountApiUrl, nfa: true }).then(resp => {
-    let aToken = resp.data?.access_token || ''
-    commit('setTokenAccess', aToken)
-    return aToken
-  })
-}
-
-export function set ({ state, commit, dispatch }, value) {
+export function set (ctx, value) {
   if (!value) {
-    commit('setToken', { access: '', refresh: '' })
+    ctx.commit('setToken', { access: '', refresh: '' })
   }
 
-  commit('setCtx', value)
+  ctx.commit('setCtx', value)
 
-  return state.ctx
+  return ctx.state.ctx
 }
