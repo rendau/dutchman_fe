@@ -35,6 +35,20 @@
             <q-input dense outlined v-model="data.val.general.timeout"/>
           </ac-label-input>
         </div>
+
+        <!-- read_header_timeout -->
+        <div>
+          <ac-label-input label="Read header timeout">
+            <q-input dense outlined v-model="data.val.general.read_header_timeout"/>
+          </ac-label-input>
+        </div>
+
+        <!-- read_timeout -->
+        <div>
+          <ac-label-input label="Read timeout">
+            <q-input dense outlined v-model="data.val.general.read_timeout"/>
+          </ac-label-input>
+        </div>
       </ac-input-group>
 
       <div class="q-pt-lg"/>
@@ -89,7 +103,9 @@ const defaultData = () => ({
   val: {
     general: {
       public_base_url: '',
-      timeout: '120s',
+      timeout: '2m',
+      read_header_timeout: '10s',
+      read_timeout: '2m',
       deploy_conf: {
         conf_file: '',
         url: '',
@@ -119,6 +135,8 @@ const defaultData = () => ({
         disable_jwk_security: true,
         cache: true,
         cache_duration: 300,
+        roles_key: 'roles',
+        roles_key_is_nested: false,
       },
     },
   },

@@ -51,6 +51,9 @@ export function refreshSinceAppStart (ctx) {
 }
 
 export function initLoads (ctx) {
+  if (!ctx.state.ctx) {
+    return Promise.resolve(null)
+  }
   return Promise.all([
     ctx.dispatch('dic/get', null, { root: true }),
     ctx.dispatch('config/get', null, { root: true }),

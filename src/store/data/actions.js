@@ -88,6 +88,8 @@ export async function generateConf (ctx) {
     '$schema': 'https://www.krakend.io/schema/v3.json',
     'version': 3,
     'timeout': realm.general.timeout,
+    'read_header_timeout': realm.general.read_header_timeout,
+    'read_timeout': realm.general.read_timeout,
     'endpoints': [],
   }
 
@@ -132,8 +134,8 @@ export async function generateConf (ctx) {
           'cache': jwtConf.cache,
           'cache_duration': jwtConf.cache_duration,
           'roles': util.coalesceArray(ep.jwt_validation.roles),
-          'roles_key': ep.jwt_validation.roles_key || undefined,
-          'roles_key_is_nested': ep.jwt_validation.roles_key_is_nested || false,
+          'roles_key': jwtConf.roles_key || undefined,
+          'roles_key_is_nested': jwtConf.roles_key_is_nested || false,
         }, _.isUndefined)
       }
 
