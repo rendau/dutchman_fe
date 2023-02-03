@@ -11,6 +11,8 @@ export function auth (ctx, password) {
       access: resp.data?.access_token || '',
       refresh: resp.data?.refresh_token || '',
     })
+
+    return ctx.dispatch('initLoads')
   })
 }
 
@@ -34,11 +36,7 @@ export function refreshSinceAppStart (ctx) {
   if (!ctxLoadSinceAppStartPr) {
     console.log('start refresh-profile since app-start')
     ctxLoadSinceAppStartPr = ctx.dispatch('refresh', true).then(() => {
-      return Promise.all([
-        ctx.dispatch('dic/get', null, { root: true }),
-        ctx.dispatch('config/get', null, { root: true }),
-        ctx.dispatch('data/list', null, { root: true }),
-      ])
+      return ctx.dispatch('initLoads')
     }, err => {
       if (err.data?.code === cns.ErrNotAuthorized) {
         return Promise.resolve(null)
@@ -50,6 +48,14 @@ export function refreshSinceAppStart (ctx) {
   }
 
   return ctxLoadSinceAppStartPr
+}
+
+export function initLoads (ctx) {
+  return Promise.all([
+    ctx.dispatch('dic/get', null, { root: true }),
+    ctx.dispatch('config/get', null, { root: true }),
+    ctx.dispatch('data/list', null, { root: true }),
+  ])
 }
 
 export function resetCtxLoadSinceAppStartPr () {
