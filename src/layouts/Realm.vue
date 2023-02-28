@@ -39,6 +39,20 @@
               </q-item-section>
             </q-item>
 
+            <!-- import config -->
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                <label class="cursor-pointer">
+                  <input type="file" ref="importConfigFile" class="hidden" @change="onImportConfigFileSelected"/>
+                  Import Config
+                </label>
+              </q-item-section>
+
+              <q-item-section avatar>
+                <q-icon name="download_for_offline" size=".9rem"/>
+              </q-item-section>
+            </q-item>
+
             <!-- separator -->
             <q-separator/>
 
@@ -71,7 +85,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import { util } from 'boot/util'
 import { useRouter } from 'vue-router'
@@ -86,6 +100,7 @@ const ops = computed(() => util.lOps(store.state.data.realms))
 const selected = computed(() => store.getters['data/selectedRealm'])
 const loading = computed(() => store.state.data.loading)
 const slotName = computed(() => (ops.value.length > 0 ? 'after-options' : 'no-option'))
+const importConfigFile = ref(null)
 
 const onInput = v => {
   router.push('/').then(() => {
@@ -95,6 +110,12 @@ const onInput = v => {
 
 const onCreateClick = v => {
   router.push({ name: 'realm-create' })
+}
+
+const onImportConfigFileSelected = async e => {
+  const file = e.target.files.item(0)
+  const text = await file.text()
+  console.log(text)
 }
 
 const onPreviewClick = () => {

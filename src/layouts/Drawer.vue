@@ -16,7 +16,7 @@
       <!-- realm select -->
       <div class="col-auto q-pt-sm">
         <div class="q-pl-md q-pr-sm q-pt-xs">
-          <RealmSelect/>
+          <Realm/>
         </div>
       </div>
 
@@ -50,7 +50,7 @@ import { useStore } from 'vuex'
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import { cns } from 'boot/cns'
-import RealmSelect from 'layouts/RealmSelect.vue'
+import Realm from 'layouts/Realm.vue'
 import AppList from 'layouts/AppList.vue'
 
 const store = useStore()
