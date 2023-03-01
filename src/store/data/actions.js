@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import { util } from 'boot/util'
+import { uid } from 'quasar'
 
 export async function list (ctx) {
   ctx.commit('setLoading', true)
@@ -63,6 +64,83 @@ export async function select (ctx, id) {
 
 export async function deploy (ctx, data) {
   return this.$api.post('data/deploy', data)
+}
+
+export async function importConf (ctx, json) {
+  let realm = ctx.state.selectedRealm
+  if (!realm || !realm.val) {
+    return ''
+  }
+
+  let data
+  try {
+    data = JSON.parse(json)
+  } catch (err) {
+    console.error(err)
+    return Promise.reject('Invalid JSON')
+  }
+
+  let appMap = {}
+
+  _.each(data.endpoints, ep => {
+    let epPath = util.normalizePath(ep.endpoint)
+
+    let be = _.head(ep.backend)
+    if (!be) return
+    if (_.lowerCase(be.method) !== _.lowerCase(ep.method)) return
+
+    let bePath = util.normalizePath(be.url_pattern)
+
+    let beUrl = util.parseUrl(_.head(be.host))
+    if (!beUrl) return
+    if (util.normalizePath(beUrl.pathname)) {
+      bePath = util.concatUrlPath(null, beUrl.pathname, bePath)
+    }
+
+    let [epPathPrefix, bePathPrefix, commonSuffix] = util.strTrimCommonSuffix(epPath, bePath)
+    epPathPrefix = util.normalizePath(epPathPrefix)
+    bePathPrefix = util.normalizePath(bePathPrefix)
+    commonSuffix = util.normalizePath(commonSuffix)
+
+    let appKey = `${beUrl.origin}__**${bePathPrefix}__**${epPathPrefix}`
+
+    let app = appMap[appKey]
+    if (app) {
+      app.endpoints.push({
+        path: commonSuffix,
+        ep,
+      })
+    } else {
+      appMap[appKey] = {
+        epPathPrefix,
+        bePathPrefix,
+        beUrl: beUrl.origin,
+        endpoints: [{
+          path: commonSuffix,
+          ep,
+        }],
+      }
+    }
+  })
+
+  let apps = []
+
+  _.each(appMap, obj => {
+    apps.push({
+      id: uid(),
+      active: true,
+      name: obj.epPathPrefix || '---',
+      path: obj.epPathPrefix,
+      backend_base: {
+        host: obj.beUrl,
+        path: obj.bePathPrefix,
+      },
+      endpoints: [],
+    })
+  })
+
+  let realmNewVal = _.assign({}, realm.val, { apps })
+  return ctx.dispatch('update', { id: realm.id, data: { val: realmNewVal } })
 }
 
 export async function generateConf (ctx) {
@@ -142,7 +220,7 @@ export async function generateConf (ctx) {
       if (ep.ip_validation?.enabled && (ep.ip_validation.allowed_ips || []).length) {
         let vCel = extraConfig['validation/cel'] || []
         vCel.push({
-          'check_expr': `req_headers['X-Real-Ip'][0] in ['${ep.ip_validation.allowed_ips.join("','")}']`,
+          'check_expr': `req_headers['X-Real-Ip'][0] in ['${ep.ip_validation.allowed_ips.join('\',\'')}']`,
         })
         extraConfig['validation/cel'] = vCel
       }

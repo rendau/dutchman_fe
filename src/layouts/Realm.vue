@@ -114,8 +114,22 @@ const onCreateClick = v => {
 
 const onImportConfigFileSelected = async e => {
   const file = e.target.files.item(0)
-  const text = await file.text()
-  console.log(text)
+  if (!file) return
+
+  let text
+  try {
+    text = await file.text()
+  } catch (err) {
+    console.error(err)
+    $q.notify({ message: 'Fail to read file', color: 'negative' })
+    return
+  }
+
+  store.dispatch('data/importConf', text).then(() => {
+    $q.notify({ message: 'Success imported', color: 'positive' })
+  }, err => {
+    $q.notify({ message: err, color: 'negative' })
+  })
 }
 
 const onPreviewClick = () => {

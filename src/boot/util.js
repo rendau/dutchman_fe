@@ -55,7 +55,8 @@ let util = {
   },
   normalizePath (v) {
     if (!v) return ''
-    return _.trim(v.replace(/\/+/g, '/'), '/')
+    v = _.trim(v.replace(/\/+/g, '/'), '/')
+    return v === '/' ? '' : v
   },
   concatUrlPath (base, ...args) {
     let res = this.normalizePath(args.join('/'))
@@ -70,6 +71,15 @@ let util = {
   },
   coalesceArray (v, dv = undefined) {
     return (v || []).length ? v : dv
+  },
+  strTrimCommonSuffix (a, b) {
+    if (!a || !b) return [a, b, '']
+    let aLen = a.length
+    let bLen = b.length
+    let i = 0
+    while (a[aLen - i - 1] === b[bLen - i - 1]) i++
+    if (i === 0) return [a, b, '']
+    return [a.substr(0, aLen - i), b.substr(0, bLen - i), a.substr(aLen - i)]
   },
 
   lFind (list, idV, idAttr = 'id') {
