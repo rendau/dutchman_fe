@@ -62,9 +62,9 @@ let util = {
     let res = this.normalizePath(args.join('/'))
     if (base) {
       try {
-        return (new URL(res, base)).href
+        return _.trim((new URL(res, base)).href, '/')
       } catch (e) {
-        return base + '/' + res
+        return _.trim(base + '/' + res, '/')
       }
     }
     return res
@@ -77,7 +77,7 @@ let util = {
     let aLen = a.length
     let bLen = b.length
     let i = 0
-    while (a[aLen - i - 1] === b[bLen - i - 1]) i++
+    while (i < aLen && i < bLen && a[aLen - i - 1] === b[bLen - i - 1]) i++
     if (i === 0) return [a, b, '']
     return [a.substr(0, aLen - i), b.substr(0, bLen - i), a.substr(aLen - i)]
   },

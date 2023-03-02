@@ -13,13 +13,13 @@
         </div>
 
         <div class="q-pt-sm text-subtitle2">
-          <div class="inline-block text-grey-8" style="min-width: 90px">Public Url:</div>
+          <div class="inline-block text-grey-8" style="min-width: 100px">Public Url:</div>
           <span class="text-grey-6">{{ $store.getters['data/selectedRealmBaseUrl'] }}</span>
           <span class="text-bold">/{{ app.path }}</span>
         </div>
 
         <div v-if="app.backend_base?.host" class="q-pt-xs text-subtitle2">
-          <div class="inline-block text-grey-8" style="min-width: 90px">Backend Url:</div>
+          <div class="inline-block text-grey-8" style="min-width: 100px">Backend Url:</div>
           <span class="text-grey-6">{{ $u.concatUrlPath(app.backend_base?.host || '', app.backend_base?.path) }}</span>
         </div>
       </ac-page-title>

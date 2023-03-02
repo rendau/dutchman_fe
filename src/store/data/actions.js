@@ -91,7 +91,11 @@ export async function importConf (ctx, json) {
 
     let bePath = util.normalizePath(be.url_pattern)
 
-    let beUrl = util.parseUrl(_.head(be.host))
+    let beHost = _.head(be.host)
+    if (beHost && !_.startsWith(beHost, 'http')) {
+      beHost = 'http://' + beHost
+    }
+    let beUrl = util.parseUrl(beHost)
     if (!beUrl) return
     if (util.normalizePath(beUrl.pathname)) {
       bePath = util.concatUrlPath(null, beUrl.pathname, bePath)
@@ -125,17 +129,53 @@ export async function importConf (ctx, json) {
 
   let apps = []
 
-  _.each(appMap, obj => {
+  _.each(appMap, app => {
+    let eps = []
+
+    _.each(app.endpoints, ep => {
+      let ipCheckExpr = _.get(ep.ep, 'extra_config.validation/cel[0].check_expr')
+      let ipValidationEnabled = false
+      let allowedIps = []
+      if (ipCheckExpr && _.startsWith(ipCheckExpr, `req_headers['X-Real-Ip'][0] in `)) {
+        let ips = ipCheckExpr.slice(31).replaceAll(`'`, `"`)
+        try {
+          allowedIps = JSON.parse(ips)
+          ipValidationEnabled = true
+        } catch (err) {
+          console.error(err)
+        }
+      }
+
+      eps.push({
+        id: uid(),
+        active: true,
+        method: ep.ep.method,
+        path: ep.path,
+        backend: {
+          custom_path: false,
+          path: '',
+        },
+        jwt_validation: {
+          enabled: !!(ep.ep.extra_config?.['auth/validator']) || !!(ep.ep.extra_config?.['github.com/devopsfaith/krakend-jose/validator']),
+          roles: [],
+        },
+        ip_validation: {
+          enabled: ipValidationEnabled,
+          allowed_ips: allowedIps,
+        },
+      })
+    })
+
     apps.push({
       id: uid(),
       active: true,
-      name: obj.epPathPrefix || '---',
-      path: obj.epPathPrefix,
+      name: app.epPathPrefix || '---',
+      path: app.epPathPrefix,
       backend_base: {
-        host: obj.beUrl,
-        path: obj.bePathPrefix,
+        host: app.beUrl,
+        path: app.bePathPrefix,
       },
-      endpoints: [],
+      endpoints: eps,
     })
   })
 
