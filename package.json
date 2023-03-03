@@ -1,8 +1,8 @@
 {
-  "name": "dutchman_fe",
+  "name": "Dutchman",
   "version": "0.0.1",
-  "description": "dutchman_fe",
-  "productName": "dutchman_fe",
+  "description": "Dutchman",
+  "productName": "Dutchman",
   "author": "Dauren",
   "private": true,
   "scripts": {

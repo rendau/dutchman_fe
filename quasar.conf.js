@@ -162,9 +162,9 @@ module.exports = configure(function (ctx) {
       },
 
       manifest: {
-        name: `dutchman_fe`,
-        short_name: `dutchman_fe`,
-        description: `dutchman_fe`,
+        name: `Dutchman`,
+        short_name: `Dutchman`,
+        description: `Dutchman`,
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',
@@ -229,7 +229,7 @@ module.exports = configure(function (ctx) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'dutchman_fe',
+        appId: 'Dutchman',
       },
 
       // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain
