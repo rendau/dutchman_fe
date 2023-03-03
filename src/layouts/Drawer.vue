@@ -7,7 +7,7 @@
       <!-- header/logo -->
       <div class="col-auto cursor-pointer" @click="router.push('/')">
         <div class="row no-wrap flex-center text-primary q-pt-md">
-          <q-icon name="token" size="25px"/>
+          <q-img no-spinner no-transition src="~assets/logo.png" width="25px" height="25px"/>
 
           <div class="text-h6 q-pl-sm non-selectable">Dutchman</div>
         </div>
