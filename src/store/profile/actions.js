@@ -11,8 +11,6 @@ export function auth (ctx, password) {
       access: resp.data?.access_token || '',
       refresh: resp.data?.refresh_token || '',
     })
-
-    return ctx.dispatch('initLoads')
   })
 }
 
@@ -35,9 +33,7 @@ export function refresh (ctx, nr401 = false) {
 export function refreshSinceAppStart (ctx) {
   if (!ctxLoadSinceAppStartPr) {
     console.log('start refresh-profile since app-start')
-    ctxLoadSinceAppStartPr = ctx.dispatch('refresh', true).then(() => {
-      return ctx.dispatch('initLoads')
-    }, err => {
+    ctxLoadSinceAppStartPr = ctx.dispatch('refresh', true).catch(err => {
       if (err.data?.code === cns.ErrNotAuthorized) {
         return Promise.resolve(null)
       } else {
@@ -48,17 +44,6 @@ export function refreshSinceAppStart (ctx) {
   }
 
   return ctxLoadSinceAppStartPr
-}
-
-export function initLoads (ctx) {
-  if (!ctx.state.ctx) {
-    return Promise.resolve(null)
-  }
-  return Promise.all([
-    ctx.dispatch('dic/get', null, { root: true }),
-    ctx.dispatch('config/get', null, { root: true }),
-    ctx.dispatch('data/list', null, { root: true }),
-  ])
 }
 
 export function resetCtxLoadSinceAppStartPr () {
@@ -74,7 +59,18 @@ export function set (ctx, value) {
     ctx.commit('setToken', { access: '', refresh: '' })
   }
 
+  let loggedIn = !ctx.state.ctx && !!value
+
   ctx.commit('setCtx', value)
 
-  return ctx.state.ctx
+  if (loggedIn) {
+    return ctx.dispatch('afterLogin')
+  }
+}
+
+export function afterLogin (ctx) {
+  return Promise.all([
+    ctx.dispatch('config/get', null, { root: true }),
+    ctx.dispatch('data/list', null, { root: true }),
+  ])
 }

@@ -3,7 +3,6 @@ import { createStore } from 'vuex'
 
 import app from './app'
 import config from './config'
-import dic from './dic'
 import profile from './profile'
 import data from './data'
 
@@ -21,7 +20,6 @@ export default store(function (/* { ssrContext } */) {
     modules: {
       app,
       config,
-      dic,
       profile,
       data,
     },

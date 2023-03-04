@@ -1,21 +1,5 @@
 <template>
   <div>
-    <!-- filters -->
-    <!--    <div class="q-pb-md">-->
-    <!--      <div class="row items-start q-gutter-x-lg q-gutter-y-md">-->
-    <!--        &lt;!&ndash; banks &ndash;&gt;-->
-    <!--        <div class="col-auto">-->
-    <!--          <q-select outlined dense-->
-    <!--                    emit-value map-options-->
-    <!--                    :label="params.prv_id ? undefined : 'Все банки'"-->
-    <!--                    :model-value="params.prv_id"-->
-    <!--                    :options="$u.lOps('prvs')"-->
-    <!--                    style="width: 250px"-->
-    <!--                    @update:model-value="onPrvInput"/>-->
-    <!--        </div>-->
-    <!--      </div>-->
-    <!--    </div>-->
-
     <!-- header -->
     <div class="row items-center justify-between q-pb-xs">
       <div class="text-subtitle2 q-pb-xs text-grey-8">
@@ -24,7 +8,7 @@
 
       <div v-if="items.length">
         <!-- add button -->
-        <q-btn dense flat round icon="add" color="primary" size=".8rem" @click="onAddClick"/>
+        <q-btn dense flat round icon="add" color="primary" size=".9rem" @click="onAddClick"/>
       </div>
     </div>
 
