@@ -5,6 +5,7 @@ import app from './app'
 import config from './config'
 import profile from './profile'
 import data from './data'
+import proxy_request from './proxy_request'
 
 /*
  * If not building with SSR mode, you can
@@ -22,6 +23,7 @@ export default store(function (/* { ssrContext } */) {
       config,
       profile,
       data,
+      proxy_request,
     },
 
     // enable strict mode (adds overhead!)

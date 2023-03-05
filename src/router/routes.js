@@ -32,6 +32,18 @@ const routes = [
     children: [
       { path: 'realm/create', name: 'realm-create', component: () => import('pages/RealmE.vue') },
       { path: 'realm/edit', name: 'realm-edit', component: () => import('pages/RealmE.vue'), props: { mode: 'edit' } },
+      {
+        path: 'perms',
+        name: 'perms',
+        component: () => import('pages/Perms.vue'),
+        children: [
+          {
+            path: 'ce/:perm_id?',
+            name: 'perms-perm_ce',
+            component: () => import('pages/PermCE.vue'),
+          },
+        ],
+      },
       { path: 'app/create', name: 'app-create', component: () => import('pages/AppE.vue') },
       {
         path: 'app/:app_id',

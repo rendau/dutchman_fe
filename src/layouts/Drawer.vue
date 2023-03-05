@@ -27,7 +27,11 @@
       <!-- menus -->
       <div class="col q-pt-xs">
         <div class="fit scroll-y">
-          <AppList/>
+          <div class="q-py-sm">
+            <Menus/>
+
+            <AppList/>
+          </div>
         </div>
       </div>
 
@@ -50,8 +54,9 @@ import { useStore } from 'vuex'
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import { cns } from 'boot/cns'
-import Realm from 'layouts/Realm.vue'
-import AppList from 'layouts/AppList.vue'
+import Realm from './Realm.vue'
+import Menus from './Menus.vue'
+import AppList from './AppList.vue'
 
 const store = useStore()
 const router = useRouter()

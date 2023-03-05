@@ -84,6 +84,7 @@ const defaultData = id => ({
     path: '',
   },
   endpoints: [],
+  perms: [],
 })
 
 const loading = ref(false)
