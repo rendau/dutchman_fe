@@ -7,18 +7,18 @@
       </ac-page-title>
 
       <div class="q-pl-md">
-        <ac-spn v-if="loading"/>
+        <ac-spn v-if="fetching"/>
       </div>
     </ac-page-toolbar>
 
     <!-- body -->
     <div class="relative-position" style="min-height: 50px">
-      <template v-if="!loading && data">
+      <template v-if="!fetching && data">
         <div>
           <div class="q-pt-sm text-subtitle2">
             <div class="inline-block text-grey-8" style="min-width: 100px">Public Url:</div>
             <span class="cursor-pointer"
-                  @click="copyTextClick($u.concatUrlPath($store.getters['realm/baseUrl'], app.path, data.data.path))">
+                  @click="copyTextClick($u.concatUrlPath($store.getters['realm/baseUrl'], app.data.path, data.data.path))">
             <span class="text-grey-6">{{ $store.getters['realm/baseUrl'] }}/{{ app.data.path }}</span>
             <span class="text-bold">/{{ data.data.path }}</span>
           </span>
@@ -89,7 +89,7 @@
         </div>
       </template>
 
-      <ac-spinner :showing="loading"/>
+      <ac-spinner :showing="fetching || loading"/>
     </div>
   </div>
 </template>
@@ -100,6 +100,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import { copyToClipboard, useQuasar } from 'quasar'
+import { util } from 'src/boot/util'
 import FormBackend from 'components/FormBackend.vue'
 import FormJwtValidation from 'components/FormJwtValidation.vue'
 import FormIPValidation from 'components/FormIPValidation.vue'
@@ -131,6 +132,7 @@ const defaultData = () => ({
   },
 })
 
+const fetching = ref(false)
 const loading = ref(false)
 const app = ref(null)
 const data = ref(null)
@@ -143,7 +145,7 @@ const fetch = () => {
     data.value = defaultData()
     return
   }
-  loading.value = true
+  fetching.value = true
   store.dispatch('endpoint/get', {
     id: id.value,
     params: { with_app: true },
@@ -153,49 +155,52 @@ const fetch = () => {
   }, err => {
     $q.notify({ type: 'negative', message: err.data.desc })
   }).finally(() => {
-    loading.value = false
+    fetching.value = false
   })
 }
 
 const onSubmit = () => {
-  // if (loading.value) return
-  // if (!data.value.method) {
-  //   $q.notify({ type: 'negative', message: 'Method is required' })
-  //   return
-  // }
-  // loading.value = true
-  // data.value.path = util.normalizePath(data.value.path)
-  // let endpoints = [...(app.value.endpoints || [])]
-  // if (isCreating.value) {
-  //   endpoints.push(data.value)
-  // } else {
-  //   endpoints = _.map(endpoints, a => (a.id === data.value.id ? data.value : a))
-  // }
-  // updateRealm(endpoints).then(() => {
-  //   $q.notify({ type: 'positive', message: 'Saved' })
-  //   router.back()
-  // }).finally(() => {
-  //   loading.value = false
-  // })
+  if (loading.value) return
+  if (!data.value.data.method) {
+    $q.notify({ type: 'negative', message: 'Method is required' })
+    return
+  }
+  loading.value = true
+  data.value.data.path = util.normalizePath(data.value.data.path)
+  let pr
+  if (isCreating.value) {
+    pr = store.dispatch('endpoint/create', data.value)
+  } else {
+    pr = store.dispatch('endpoint/update', {id: id.value, data: data.value})
+  }
+  pr.then(() => {
+    $q.notify({ type: 'positive', message: 'Saved' })
+    router.back()
+  }, err => {
+    $q.notify({ type: 'negative', message: err.data.desc })
+  }).finally(() => {
+    loading.value = false
+  })
 }
 
 const onDelete = () => {
-  // if (loading.value) return
-  // if (!data.value.id) return
-  // $q.dialog({
-  //   message: 'Do you really want to delete this record?',
-  //   ok: { label: 'Yes', noCaps: true },
-  //   cancel: { label: 'Cancel', flat: true, noCaps: true },
-  // }).onOk(() => {
-  //   loading.value = true
-  //   let endpoints = _.reject(app.value.endpoints, x => x.id === data.value.id)
-  //   updateRealm(endpoints).then(() => {
-  //     $q.notify({ type: 'positive', message: 'Deleted' })
-  //     router.back()
-  //   }).finally(() => {
-  //     loading.value = false
-  //   })
-  // })
+  if (loading.value) return
+  if (!id.value) return
+  $q.dialog({
+    message: 'Do you really want to delete this record?',
+    ok: { label: 'Yes', noCaps: true },
+    cancel: { label: 'Cancel', flat: true, noCaps: true },
+  }).onOk(() => {
+    loading.value = true
+    store.dispatch('endpoint/remove', id.value).then(() => {
+      $q.notify({ type: 'positive', message: 'Deleted' })
+      router.back()
+    }, err => {
+      $q.notify({ type: 'negative', message: err.data.desc })
+    }).finally(() => {
+      loading.value = false
+    })
+  })
 }
 
 const copyTextClick = txt => {
