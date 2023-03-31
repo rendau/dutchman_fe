@@ -34,7 +34,7 @@ onMounted(() => {
 
   store.dispatch('profile/refreshSinceAppStart').catch(err => {
     console.error('Fail to start app', err)
-    store.commit('app/setAppError', cns.ServiceNotAvailable)
+    store.commit('app/setAppError', cns.ErrServiceNotAvailable)
   }).then(() => {
     store.commit('app/removeLoading')
     store.dispatch('app/resolveAppStartPr')

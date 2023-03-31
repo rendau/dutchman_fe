@@ -71,6 +71,6 @@ export function set (ctx, value) {
 export function afterLogin (ctx) {
   return Promise.all([
     ctx.dispatch('config/get', null, { root: true }),
-    ctx.dispatch('data/list', null, { root: true }),
+    ctx.dispatch('realm/list', null, { root: true }),
   ])
 }

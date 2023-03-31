@@ -6,9 +6,10 @@ const cns = {
   DefaultLocale: 'en-en',
 
   ErrSystem: 'system_error',
-  ServiceNotAvailable: 'service_not_available',
+  ErrObjectNotFound: 'object_not_found',
+  ErrServiceNotAvailable: 'service_not_available',
   ErrNotAuthorized: 'not_authorized',
-  PermissionDenied: 'permission_denied',
+  ErrPermissionDenied: 'permission_denied',
   ErrFormValidate: 'form_validate',
 
   authRouteName: 'auth',

@@ -4,7 +4,7 @@
       <q-select dense outlined
                 emit-value map-options
                 :label="selected ? undefined : 'Realm'"
-                :model-value="selected?.name"
+                :model-value="selected?.id"
                 :options="ops"
                 :loading="loading"
                 bg-color="blue-1"
@@ -85,9 +85,9 @@
 </template>
 
 <script setup>
+import _ from 'lodash'
 import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
-import { util } from 'boot/util'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import DShowJson from 'components/DShowJson.vue'
@@ -96,16 +96,17 @@ const router = useRouter()
 const store = useStore()
 const $q = useQuasar()
 
-const ops = computed(() => util.lOps(store.state.data.realms))
-const selected = computed(() => store.getters['data/selectedRealm'])
-const loading = computed(() => store.state.data.loading)
+const ops = computed(() => _.map(store.state.realm.list, v => ({
+  value: v.id,
+  label: v.data.name,
+})))
+const selected = computed(() => store.getters['realm/selected'])
+const loading = computed(() => store.getters['realm/loading'])
 const slotName = computed(() => (ops.value.length > 0 ? 'after-options' : 'no-option'))
 const importConfigFile = ref(null)
 
 const onInput = v => {
-  router.push('/').then(() => {
-    store.dispatch('data/select', v)
-  })
+  router.push('/').then(() => store.dispatch('realm/select', v))
 }
 
 const onCreateClick = v => {
@@ -125,7 +126,7 @@ const onImportConfigFileSelected = async e => {
     return
   }
 
-  store.dispatch('data/importConf', text).then(() => {
+  store.dispatch('realm/importConf', text).then(() => {
     $q.notify({ message: 'Success imported', color: 'positive' })
   }, err => {
     $q.notify({ message: err, color: 'negative' })
@@ -133,7 +134,7 @@ const onImportConfigFileSelected = async e => {
 }
 
 const onPreviewClick = () => {
-  store.dispatch('data/generateConf').then(data => {
+  store.dispatch('realm/generateConf').then(data => {
     $q.dialog({
       component: DShowJson,
       componentProps: {
@@ -155,13 +156,8 @@ const onDeployClick = () => {
       return
     }
 
-    store.dispatch('data/generateConf').then(data => {
-      store.dispatch('data/deploy', {
-        conf_file: deployConf.conf_file || '',
-        url: deployConf.url || '',
-        method: deployConf.method,
-        data,
-      }).then(() => {
+    store.dispatch('realm/generateConf').then(config => {
+      store.dispatch('realm/deploy', { config }).then(() => {
         $q.notify({ message: 'Success deployed', color: 'positive' })
       }, err => {
         $q.notify({ message: err.message, color: 'negative' })

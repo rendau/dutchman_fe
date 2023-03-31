@@ -12,30 +12,52 @@
       </div>
     </q-item-label>
 
-    <q-item v-for="app in realmApps" :key="`app-${app.id}`" dense class="q-pl-md"
-            :to="{name: 'app', params: {app_id: app.id}}" active-class="bg-primary text-white">
+    <q-item v-for="item in items" :key="`item-${item.id}`" dense class="q-pl-md"
+            :to="{name: 'app', params: {app_id: item.id}}" active-class="bg-primary text-white">
       <q-item-section side style="color: inherit">
         <q-icon name="lan" size="1.1rem"/>
       </q-item-section>
 
-      <q-item-section class="q-py-xs q-pl-xs" :class="{'text-grey-6': !app.active}">
-        {{ app.name }}
+      <q-item-section class="q-py-xs q-pl-xs" :class="{'text-grey-6': !item.data.active}">
+        {{ item.data.name }}
       </q-item-section>
     </q-item>
   </q-list>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+import { useQuasar } from 'quasar'
 
 const store = useStore()
 const router = useRouter()
+const $q = useQuasar()
 
-const realmApps = computed(() => store.getters['data/selectedRealmApps'])
+const selectedRealmId = computed(() => store.getters['realm/selectedId'])
+const items = ref([])
+const loading = ref(false)
+
+const refreshItems = () => {
+  if (!selectedRealmId.value) return
+  loading.value = true
+  store.dispatch('application/list', {
+    realm_id: selectedRealmId.value,
+  }).then(resp => {
+    items.value = _.sortBy(resp.data?.results || [], 'data.name')
+  }, err => {
+    $q.notify({ type: 'negative', message: err.data.desc })
+  }).finally(() => {
+    loading.value = false
+  })
+}
 
 const onAddClick = () => {
   router.push({ name: 'app-create' })
 }
+
+watch(() => selectedRealmId.value, () => refreshItems())
+
+onMounted(() => refreshItems())
 </script>

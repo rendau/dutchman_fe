@@ -4,7 +4,9 @@ import { createStore } from 'vuex'
 import app from './app'
 import config from './config'
 import profile from './profile'
-import data from './data'
+import realm from './realm'
+import application from './application'
+import endpoint from './endpoint'
 import proxy_request from './proxy_request'
 
 /*
@@ -22,7 +24,9 @@ export default store(function (/* { ssrContext } */) {
       app,
       config,
       profile,
-      data,
+      realm,
+      application,
+      endpoint,
       proxy_request,
     },
 

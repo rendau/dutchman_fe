@@ -14,7 +14,7 @@ export default function (action, params = {}) {
     loading.value = true
     let pars = _.assign({}, params)
     return store.dispatch(action, pars).then(resp => {
-      results.value = resp.data
+      results.value = resp.data?.results || []
     }, err => {
       $q.notify({ type: 'negative', message: err.data.desc })
     }).then(() => {

@@ -1,39 +1,47 @@
 <template>
   <div v-if="$route.meta.rid === rid">
-    <ac-page-toolbar>
-      <ac-page-title>
-        <div class="text-bold">
-          <div class="row no-wrap items-center">
-            <div>{{ app.name }}</div>
+    <div class="relative-position" style="min-height: 50px">
+      <template v-if="!loading && app">
+        <ac-page-toolbar>
+          <ac-page-title>
+            <div class="text-bold">
+              <div class="row no-wrap items-center">
+                <div>{{ app.name }}</div>
 
-<!--            <div v-if="!app.active" class="inline-block q-ml-md text-body2 text-weight-regular">not active</div>-->
-            <q-chip v-if="!app.active" dense label="not active"
-                    color="grey-4" text-color="grey-8" class="q-ml-lg q-px-sm" size=".6rem"/>
+                <!--            <div v-if="!app.active" class="inline-block q-ml-md text-body2 text-weight-regular">not active</div>-->
+                <q-chip v-if="!app.data.active" dense label="not active"
+                        color="grey-4" text-color="grey-8" class="q-ml-lg q-px-sm" size=".6rem"/>
+              </div>
+            </div>
+
+            <div class="q-pt-sm text-subtitle2">
+              <div class="inline-block text-grey-8" style="min-width: 100px">Public Url:</div>
+              <span class="text-grey-6">{{ $store.getters['realm/baseUrl'] }}</span>
+              <span class="text-bold">/{{ app.data.path }}</span>
+            </div>
+
+            <div v-if="app.data.backend_base?.host" class="q-pt-xs text-subtitle2">
+              <div class="inline-block text-grey-8" style="min-width: 100px">Backend Url:</div>
+              <span class="text-grey-6">{{
+                  $u.concatUrlPath(app.data.backend_base?.host || '', app.data.backend_base?.path)
+                }}</span>
+            </div>
+          </ac-page-title>
+
+          <q-space/>
+
+          <div>
+            <q-btn flat round icon="edit" color="primary" @click="onEditClick"/>
           </div>
+        </ac-page-toolbar>
+
+        <!-- body -->
+        <div>
+          <EndpointList :app_id="id"/>
         </div>
+      </template>
 
-        <div class="q-pt-sm text-subtitle2">
-          <div class="inline-block text-grey-8" style="min-width: 100px">Public Url:</div>
-          <span class="text-grey-6">{{ $store.getters['data/selectedRealmBaseUrl'] }}</span>
-          <span class="text-bold">/{{ app.path }}</span>
-        </div>
-
-        <div v-if="app.backend_base?.host" class="q-pt-xs text-subtitle2">
-          <div class="inline-block text-grey-8" style="min-width: 100px">Backend Url:</div>
-          <span class="text-grey-6">{{ $u.concatUrlPath(app.backend_base?.host || '', app.backend_base?.path) }}</span>
-        </div>
-      </ac-page-title>
-
-      <q-space/>
-
-      <div>
-        <q-btn flat round icon="edit" color="primary" @click="onEditClick"/>
-      </div>
-    </ac-page-toolbar>
-
-    <!-- body -->
-    <div>
-      <EndpointList :app="app"/>
+      <ac-spinner :showing="loading"/>
     </div>
   </div>
 
@@ -41,33 +49,48 @@
 </template>
 
 <script setup>
-import _ from 'lodash'
 import { useRoute, useRouter } from 'vue-router'
-import { computed, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import EndpointList from 'components/endpoint/List'
+import { useQuasar } from 'quasar'
 
 const route = useRoute()
 const router = useRouter()
 const store = useStore()
+const $q = useQuasar()
 
 const props = defineProps({
   rid: {},
 })
 
 const id = computed(() => (route.params.app_id || ''))
-const realm = computed(() => store.getters['data/selectedRealm'])
-const app = computed(() => (_.find(store.getters['data/selectedRealmApps'], { id: id.value }) || {}))
+const realm = computed(() => store.getters['realm/selected'])
+const app = ref(null)
+const loading = ref(false)
+
+const fetch = () => {
+  if (!id.value) return
+  loading.value = true
+  store.dispatch('application/get', id.value).then(resp => {
+    app.value = resp.data
+  }, err => {
+    $q.notify({ type: 'negative', message: err.data.desc })
+  }).finally(() => {
+    loading.value = false
+  })
+}
 
 const onEditClick = () => {
   router.push({ name: 'app-edit', params: { app_id: id.value } })
 }
 
-watch(() => route.name, (v, ov) => {
+watch(() => route.name, () => {
   if (route.meta.rid === props.rid) {
-    if (!app.value.id) {
-      router.back()
-    }
+    fetch()
   }
 })
+watch(() => id.value, () => fetch())
+
+onMounted(() => fetch())
 </script>
