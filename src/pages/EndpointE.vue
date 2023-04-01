@@ -168,7 +168,7 @@ const fetchData = () => {
     return
   }
   return store.dispatch('endpoint/get', id.value).then(resp => {
-    data.value = _.defaults(_.omit(resp.data, 'app'), defaultData())
+    data.value = resp.data
   })
 }
 

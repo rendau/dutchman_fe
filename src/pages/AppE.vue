@@ -11,7 +11,7 @@
     </ac-page-toolbar>
 
     <!-- body -->
-    <div>
+    <div class="relative-position" style="min-height: 50px">
       <!-- form -->
       <ac-input-group>
         <!-- active -->
@@ -24,21 +24,21 @@
         <!-- name -->
         <div>
           <ac-label-input label="Name">
-            <q-input v-model="data.name" dense outlined/>
+            <q-input v-model="data.data.name" dense outlined/>
           </ac-label-input>
         </div>
 
         <!-- path -->
         <div>
           <ac-label-input label="Path prefix">
-            <q-input v-model="data.path" dense outlined/>
+            <q-input v-model="data.data.path" dense outlined/>
           </ac-label-input>
         </div>
       </ac-input-group>
 
       <div class="q-pt-lg"/>
 
-      <FormBackendBase v-model:data="data.backend_base"/>
+      <FormBackendBase v-model:data="data.data.backend_base"/>
 
       <div class="q-pt-lg q-pb-md"/>
 
@@ -52,16 +52,17 @@
           <q-btn no-caps color="negative" label="Delete" @click="onDelete"/>
         </div>
       </div>
+
+      <ac-spinner :showing="loading"/>
     </div>
   </div>
 </template>
 
 <script setup>
-import _ from 'lodash'
 import { useRoute, useRouter } from 'vue-router'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useStore } from 'vuex'
-import { uid, useQuasar } from 'quasar'
+import { useQuasar } from 'quasar'
 import { util } from 'boot/util'
 import FormBackendBase from 'components/FormBackendBase.vue'
 
@@ -74,59 +75,60 @@ const props = defineProps({
   mode: { type: String, default: 'create' },
 })
 
-const defaultData = id => ({
-  id: id || '',
+const defaultData = () => ({
   active: true,
-  name: '',
-  path: '',
-  backend_base: {
-    host: '',
+  data: {
+    name: '',
     path: '',
+    backend_base: {
+      host: '',
+      path: '',
+    },
+    endpoints: [],
+    perms: [],
   },
-  endpoints: [],
-  perms: [],
 })
 
 const loading = ref(false)
 const data = ref(defaultData())
 
 const id = computed(() => (route.params.app_id || ''))
-const realm = computed(() => store.getters['data/selectedRealm'])
-const realmApps = computed(() => store.getters['data/selectedRealmApps'])
+const realmId = computed(() => store.getters['realm/selectedId'])
 const isCreating = computed(() => props.mode === 'create')
 
 const fetch = () => {
   if (isCreating.value) {
-    data.value = defaultData(uid())
+    data.value.realm_id = realmId.value
     return
   }
-
-  let app = _.find(realmApps.value, { id: id.value }) || {}
-  if (!app) {
-    $q.notify({ type: 'negative', message: 'App not found' })
-    router.back()
-    return
-  }
-  data.value = _.defaults(_.clone(app), defaultData())
+  store.dispatch('application/get', id.value).then(resp => {
+    data.value = resp.data
+  }, err => {
+    $q.notify({ type: 'negative', message: err.data.desc })
+  }).finally(() => {
+    loading.value = false
+  })
 }
 
 const onSubmit = () => {
   if (loading.value) return
-  if (!data.value.name) {
+  if (!data.value.data.name) {
     $q.notify({ type: 'negative', message: 'Name is required' })
     return
   }
   loading.value = true
-  data.value.path = util.normalizePath(data.value.path)
-  let apps = [...realmApps.value]
+  data.value.data.path = util.normalizePath(data.value.data.path)
+  let pr
   if (isCreating.value) {
-    apps.push(data.value)
+    pr = store.dispatch('application/create', data.value)
   } else {
-    apps = _.map(apps, a => (a.id === data.value.id ? data.value : a))
+    pr = store.dispatch('application/update', { id: id.value, data: data.value })
   }
-  updateRealm(apps).then(() => {
+  pr.then(() => {
     $q.notify({ type: 'positive', message: 'Saved' })
     router.back()
+  }, err => {
+    $q.notify({ type: 'negative', message: err.data.desc })
   }).finally(() => {
     loading.value = false
   })
@@ -134,26 +136,22 @@ const onSubmit = () => {
 
 const onDelete = () => {
   if (loading.value) return
-  if (!data.value.id) return
+  if (!id.value) return
   $q.dialog({
     message: 'Do you really want to delete this record?',
     ok: { label: 'Yes', noCaps: true },
     cancel: { label: 'Cancel', flat: true, noCaps: true },
   }).onOk(() => {
     loading.value = true
-    let apps = _.reject(realmApps.value, a => a.id === data.value.id)
-    updateRealm(apps).then(() => {
+    store.dispatch('application/remove', id.value).then(() => {
       $q.notify({ type: 'positive', message: 'Deleted' })
-      router.back()
+      router.go(-2)
+    }, err => {
+      $q.notify({ type: 'negative', message: err.data.desc })
     }).finally(() => {
       loading.value = false
     })
   })
-}
-
-const updateRealm = async apps => {
-  let val = _.assign({}, realm.value.val, { apps })
-  return store.dispatch('data/update', { id: realm.value.id, data: { val } })
 }
 
 watch(() => isCreating.value, () => fetch())

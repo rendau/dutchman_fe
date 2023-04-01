@@ -1,5 +1,5 @@
 <template>
-  <q-list>
+  <q-list class="relative-position">
     <q-item-label header class="q-pb-sm">
       <div class="row no-wrap items-center">
         <div class="col">
@@ -18,10 +18,12 @@
         <q-icon name="lan" size="1.1rem"/>
       </q-item-section>
 
-      <q-item-section class="q-py-xs q-pl-xs" :class="{'text-grey-6': !item.data.active}">
+      <q-item-section class="q-py-xs q-pl-xs" :class="{'text-grey-6': !item.active}">
         {{ item.data.name }}
       </q-item-section>
     </q-item>
+
+    <ac-spinner :showing="loading"/>
   </q-list>
 </template>
 
@@ -58,6 +60,7 @@ const onAddClick = () => {
 }
 
 watch(() => selectedRealmId.value, () => refreshItems())
+watch(() => store.state.application.changes, () => refreshItems())
 
 onMounted(() => refreshItems())
 </script>

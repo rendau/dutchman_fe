@@ -37,7 +37,9 @@
 
         <!-- body -->
         <div>
-          <EndpointList :app_id="id"/>
+          <div v-if="app">
+            <EndpointList :app_id="id"/>
+          </div>
         </div>
       </template>
 
@@ -54,6 +56,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import EndpointList from 'components/endpoint/List'
 import { useQuasar } from 'quasar'
+import { cns } from 'boot/cns'
 
 const route = useRoute()
 const router = useRouter()
@@ -72,10 +75,15 @@ const loading = ref(false)
 const fetch = () => {
   if (!id.value) return
   loading.value = true
+  app.value = null
   store.dispatch('application/get', id.value).then(resp => {
     app.value = resp.data
   }, err => {
-    $q.notify({ type: 'negative', message: err.data.desc })
+    if (err.data.code === cns.ErrObjectNotFound) {
+      router.back()
+    } else {
+      $q.notify({ type: 'negative', message: err.data.desc })
+    }
   }).finally(() => {
     loading.value = false
   })
