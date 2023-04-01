@@ -44,7 +44,7 @@
           <!-- active -->
           <div>
             <ac-label-input label="Active">
-              <q-toggle v-model="data.data.active"/>
+              <q-toggle v-model="data.active"/>
             </ac-label-input>
           </div>
 
@@ -116,19 +116,21 @@ const props = defineProps({
 
 const defaultData = () => ({
   active: true,
-  method: 'GET',
-  path: '',
-  backend: {
-    custom_path: false,
+  data: {
+    method: 'GET',
     path: '',
-  },
-  jwt_validation: {
-    enabled: false,
-    roles: [],
-  },
-  ip_validation: {
-    enabled: false,
-    allowed_ips: [],
+    backend: {
+      custom_path: false,
+      path: '',
+    },
+    jwt_validation: {
+      enabled: false,
+      roles: [],
+    },
+    ip_validation: {
+      enabled: false,
+      allowed_ips: [],
+    },
   },
 })
 
@@ -137,25 +139,36 @@ const loading = ref(false)
 const app = ref(null)
 const data = ref(null)
 
+const appId = computed(() => (route.params.app_id || ''))
 const id = computed(() => (route.params.endpoint_id || ''))
 const isCreating = computed(() => props.mode === 'create')
 
 const fetch = () => {
-  if (isCreating.value) {
-    data.value = defaultData()
-    return
-  }
   fetching.value = true
-  store.dispatch('endpoint/get', {
-    id: id.value,
-    params: { with_app: true },
-  }).then(resp => {
-    app.value = resp.data.app
-    data.value = _.defaults(_.omit(resp.data, 'app'), defaultData())
-  }, err => {
+  Promise.all([
+    fetchApp(),
+    fetchData(),
+  ]).catch( err => {
     $q.notify({ type: 'negative', message: err.data.desc })
   }).finally(() => {
     fetching.value = false
+  })
+}
+
+const fetchApp = () => {
+  return store.dispatch('application/get', appId.value).then(resp => {
+    app.value = resp.data
+  })
+}
+
+const fetchData = () => {
+  if (isCreating.value) {
+    data.value = defaultData()
+    data.value.app_id = appId.value
+    return
+  }
+  return store.dispatch('endpoint/get', id.value).then(resp => {
+    data.value = _.defaults(_.omit(resp.data, 'app'), defaultData())
   })
 }
 
@@ -171,7 +184,7 @@ const onSubmit = () => {
   if (isCreating.value) {
     pr = store.dispatch('endpoint/create', data.value)
   } else {
-    pr = store.dispatch('endpoint/update', {id: id.value, data: data.value})
+    pr = store.dispatch('endpoint/update', { id: id.value, data: data.value })
   }
   pr.then(() => {
     $q.notify({ type: 'positive', message: 'Saved' })

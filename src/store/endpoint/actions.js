@@ -2,8 +2,8 @@ export function list (ctx, params) {
   return this.$api.get('endpoint', { params })
 }
 
-export function get (ctx, { id, params }) {
-  return this.$api.get(`endpoint/${id}`, { params })
+export function get (ctx, id) {
+  return this.$api.get(`endpoint/${id}`)
 }
 
 export function create (ctx, data) {

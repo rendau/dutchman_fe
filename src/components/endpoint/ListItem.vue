@@ -1,5 +1,5 @@
 <template>
-  <tr class="cursor-pointer" :class="{'text-grey-6': !data.data.active}">
+  <tr class="cursor-pointer" :class="{'text-grey-6': !data.active}">
     <td class="text-right text-no-wrap text-weight-light min-width">
       <div style="min-width: 56px">
         {{ data.data.method }}

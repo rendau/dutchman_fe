@@ -6,7 +6,7 @@
         Endpoints:
       </div>
 
-      <div v-if="items.length">
+      <div v-if="results.length">
         <!-- add button -->
         <q-btn dense flat round icon="add" color="primary" size=".9rem" @click="onAddClick"/>
       </div>
@@ -29,7 +29,7 @@
         </div>
       </div>
 
-      <div v-if="!items.length">
+      <div v-if="!results.length">
         <q-btn dense flat no-caps icon="add" label="add endpoint" color="primary"
                class="full-width" @click="onAddClick"/>
       </div>
@@ -55,22 +55,14 @@ const props = defineProps({
 
 const { loading, results, refresh } = list('endpoint/list', { app_id: props.app_id })
 
-const items = computed(() => _.sortBy(
-    results.value || [],
-    [
-      x => !x.active,
-      'data.path',
-      'data.method',
-    ],
-))
 const groupedItems = computed(() => {
-  return _.sortBy(_.map(_.groupBy(items.value, x => _.head(_.split(x.data.path, '/'))), (v, k) => {
+  return _.sortBy(_.map(_.groupBy(results.value, x => _.head(_.split(x.data.path, '/'))), (v, k) => {
     return { path: k, items: v }
   }), 'path')
 })
 
 const onAddClick = () => {
-  // router.push({ name: 'endpoint-create' })
+  router.push({ name: 'endpoint-create' })
 }
 
 const onItemClick = item => {
