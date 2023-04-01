@@ -45,7 +45,7 @@ const refreshItems = () => {
   store.dispatch('application/list', {
     realm_id: selectedRealmId.value,
   }).then(resp => {
-    items.value = _.sortBy(resp.data?.results || [], 'data.name')
+    items.value = resp.data?.results || []
   }, err => {
     $q.notify({ type: 'negative', message: err.data.desc })
   }).finally(() => {
