@@ -23,6 +23,7 @@ export function create (ctx, data) {
   return this.$api.post('realm', data).then(createResp => {
     return ctx.dispatch('list').then(() => {
       if (createResp.data?.id) {
+        // select new realm
         return ctx.dispatch('select', createResp.data.id)
       }
     })
@@ -34,6 +35,7 @@ export function update (ctx, { id, data }) {
   return this.$api.put(`realm/${id}`, data).then(() => {
     return ctx.dispatch('list').then(() => {
       if (ctx.state.selected?.id === id) {
+        // refresh selected realm
         return ctx.dispatch('refreshSelected')
       }
     })
@@ -45,6 +47,7 @@ export function remove (ctx, id) {
   ctx.commit('addLoading')
   return this.$api.delete(`realm/${id}`).then(() => {
     if (ctx.state.selected?.id === id) {
+      // unselect realm
       return ctx.dispatch('select', null)
     }
   }).then(() => ctx.dispatch('list')).finally(() => ctx.commit('doneLoading'))
@@ -63,7 +66,6 @@ export function select (ctx, id) {
 }
 
 export function setSelected (ctx, data) {
-  // ctx.commit('addLoading')
   ctx.commit('setSelected', data || null)
 }
 

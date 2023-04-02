@@ -7,7 +7,7 @@
       </ac-page-title>
 
       <div class="q-pl-md">
-        <ac-spn v-if="loading || $store.state.data.loading"/>
+        <ac-spn v-if="loading || $store.getters['realm/loading']"/>
       </div>
     </ac-page-toolbar>
 
@@ -18,50 +18,50 @@
         <!-- name -->
         <div>
           <ac-label-input label="Name">
-            <q-input :autofocus="isCreating" v-model="data.name" dense outlined/>
+            <q-input :autofocus="isCreating" v-model="data.data.name" dense outlined/>
           </ac-label-input>
         </div>
 
         <!-- public_base_url -->
         <div>
           <ac-label-input label="Public base-url">
-            <q-input v-model="data.val.general.public_base_url" dense outlined/>
+            <q-input v-model="data.data.public_base_url" dense outlined/>
           </ac-label-input>
         </div>
 
         <!-- timeout -->
         <div>
           <ac-label-input label="Timeout">
-            <q-input dense outlined v-model="data.val.general.timeout"/>
+            <q-input dense outlined v-model="data.data.timeout"/>
           </ac-label-input>
         </div>
 
         <!-- read_header_timeout -->
         <div>
           <ac-label-input label="Read header timeout">
-            <q-input dense outlined v-model="data.val.general.read_header_timeout"/>
+            <q-input dense outlined v-model="data.data.read_header_timeout"/>
           </ac-label-input>
         </div>
 
         <!-- read_timeout -->
         <div>
           <ac-label-input label="Read timeout">
-            <q-input dense outlined v-model="data.val.general.read_timeout"/>
+            <q-input dense outlined v-model="data.data.read_timeout"/>
           </ac-label-input>
         </div>
       </ac-input-group>
 
       <div class="q-pt-lg"/>
 
-      <FormCorsConf v-model:data="data.val.general.cors_conf"/>
+      <FormCorsConf v-model:data="data.data.cors_conf"/>
 
       <div class="q-pt-lg"/>
 
-      <FormJwtConf v-model:data="data.val.general.jwt_conf"/>
+      <FormJwtConf v-model:data="data.data.jwt_conf"/>
 
       <div class="q-pt-lg"/>
 
-      <FormDeployConf v-model:data="data.val.general.deploy_conf"/>
+      <FormDeployConf v-model:data="data.data.deploy_conf"/>
 
       <div class="q-pt-lg q-pb-md"/>
 
@@ -98,58 +98,54 @@ const props = defineProps({
 })
 
 const defaultData = () => ({
-  id: '',
-  name: '',
-  val: {
-    general: {
-      public_base_url: '',
-      timeout: '2m',
-      read_header_timeout: '10s',
-      read_timeout: '2m',
-      deploy_conf: {
-        conf_file: '',
-        url: '',
-        method: 'POST',
-      },
-      cors_conf: {
-        enabled: true,
-        allow_origins: ['*'],
-        allow_methods: [
-          'GET',
-          'HEAD',
-          'POST',
-          'PUT',
-          'DELETE',
-          'CONNECT',
-          'OPTIONS',
-          'TRACE',
-          'PATCH',
-        ],
-        allow_headers: ['*'],
-        allow_credentials: true,
-        max_age: '120h',
-      },
-      jwt_conf: {
-        alg: 'RS256',
-        jwk_url: '',
-        disable_jwk_security: true,
-        cache: true,
-        cache_duration: 300,
-        roles_key: 'roles',
-        roles_key_is_nested: false,
-      },
+  data: {
+    name: '',
+    public_base_url: '',
+    timeout: '2m',
+    read_header_timeout: '10s',
+    read_timeout: '2m',
+    deploy_conf: {
+      conf_file: '',
+      url: '',
+      method: 'POST',
+    },
+    cors_conf: {
+      enabled: true,
+      allow_origins: ['*'],
+      allow_methods: [
+        'GET',
+        'HEAD',
+        'POST',
+        'PUT',
+        'DELETE',
+        'CONNECT',
+        'OPTIONS',
+        'TRACE',
+        'PATCH',
+      ],
+      allow_headers: ['*'],
+      allow_credentials: true,
+      max_age: '120h',
+    },
+    jwt_conf: {
+      alg: 'RS256',
+      jwk_url: '',
+      disable_jwk_security: true,
+      cache: true,
+      cache_duration: 300,
+      roles_key: 'roles',
+      roles_key_is_nested: false,
     },
   },
 })
 
 const loading = ref(false)
 const data = ref(defaultData())
-const realm = computed(() => store.getters['data/selectedRealm'])
+const realm = computed(() => store.getters['realm/selected'])
 const isCreating = computed(() => props.mode === 'create')
 
 const fetch = () => {
   if (isCreating.value) {
-    data.value = defaultData()
     return
   }
 
@@ -158,22 +154,22 @@ const fetch = () => {
     router.back()
     return
   }
-  data.value = _.defaults(_.cloneDeep(realm.value), defaultData())
+  data.value = _.cloneDeep(realm.value)
 }
 
 const onSubmit = () => {
   if (loading.value) return
-  if (!data.value.name) {
+  if (!data.value.data.name) {
     $q.notify({ type: 'negative', message: 'Name is required' })
     return
   }
   loading.value = true
-  data.value.val.general.public_base_url = _.trimEnd(data.value.val.general.public_base_url, '/')
+  data.value.data.public_base_url = _.trimEnd(data.value.data.public_base_url, '/')
   let pr = null
   if (isCreating.value) {
-    pr = store.dispatch('data/create', data.value)
+    pr = store.dispatch('realm/create', data.value)
   } else {
-    pr = store.dispatch('data/update', { id: data.value.id, data: data.value })
+    pr = store.dispatch('realm/update', { id: data.value.id, data: data.value })
   }
   pr.then(() => {
     $q.notify({ type: 'positive', message: 'Saved' })
@@ -192,7 +188,7 @@ const onDelete = () => {
     cancel: { label: 'Cancel', flat: true, noCaps: true },
   }).onOk(() => {
     loading.value = true
-    store.dispatch('data/remove', data.value.id).then(() => {
+    store.dispatch('realm/remove', data.value.id).then(() => {
       $q.notify({ type: 'positive', message: 'Deleted' })
       router.back()
     }).finally(() => {
