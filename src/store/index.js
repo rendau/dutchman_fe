@@ -7,6 +7,7 @@ import profile from './profile'
 import realm from './realm'
 import application from './application'
 import endpoint from './endpoint'
+import role from './role'
 import proxy_request from './proxy_request'
 
 /*
@@ -27,6 +28,7 @@ export default store(function (/* { ssrContext } */) {
       realm,
       application,
       endpoint,
+      role,
       proxy_request,
     },
 

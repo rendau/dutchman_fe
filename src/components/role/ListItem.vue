@@ -1,19 +1,15 @@
 <template>
   <tr class="cursor-pointer" :class="{'text-grey-6': data.is_fetched}">
     <td class="text-no-wrap text-center">
-      {{ data.app_name }}
+      {{ data.app_id }}
     </td>
 
     <td class="text-no-wrap text-center">
-      {{ data.code }}
+      {{ data.data.code }}
     </td>
 
     <td class="text-no-wrap">
-      {{ data.dsc }}
-    </td>
-
-    <td class="text-no-wrap text-center">
-      {{ data.is_all ? 'Yes' : '' }}
+      {{ data.data.dsc }}
     </td>
 
     <td class="text-no-wrap text-center">

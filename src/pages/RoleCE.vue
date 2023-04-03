@@ -4,7 +4,7 @@
       <div>
         <ac-page-toolbar bb>
           <ac-page-title>
-            {{ id ? 'Permission' : 'Create permission' }}
+            {{ id ? 'Role' : 'Create role' }}
           </ac-page-title>
         </ac-page-toolbar>
 
@@ -33,14 +33,7 @@
                   <q-input outlined
                            :readonly="!enabled"
                            label="Code"
-                           v-model="data.code"/>
-                </div>
-
-                <!-- is_all -->
-                <div class="col-12 col-md-6">
-                  <q-toggle :disable="!enabled"
-                            label="Is All"
-                            v-model="data.is_all"/>
+                           v-model="data.data.code"/>
                 </div>
 
                 <!-- dsc -->
@@ -48,7 +41,7 @@
                   <q-input outlined
                            :readonly="!enabled"
                            label="Description"
-                           v-model="data.dsc"/>
+                           v-model="data.data.dsc"/>
                 </div>
               </div>
             </div>
@@ -80,13 +73,12 @@
 </template>
 
 <script setup>
+import _ from 'lodash'
 import { useRoute, useRouter } from 'vue-router'
 import { computed, onMounted, ref } from 'vue'
 import { useStore } from 'vuex'
 import { useQuasar } from 'quasar'
 import { useI18n } from 'vue-i18n/index'
-import { util } from 'boot/util'
-import _ from 'lodash'
 
 const route = useRoute()
 const router = useRouter()
@@ -98,86 +90,85 @@ const props = defineProps({
   rid: {},
 })
 
-const id = computed(() => (parseInt(route.params.perm_id) || 0))
+const id = computed(() => route.params.role_id || '')
+const selectedRealmId = computed(() => store.getters['realm/selectedId'])
 const isCreating = computed(() => !id.value)
 const loading = ref(false)
 const data = ref({
   app_id: null,
-  code: '',
-  dsc: '',
-  is_all: false,
   is_fetched: false,
+  data: {
+    code: '',
+    dsc: '',
+  },
 })
-const realm = computed(() => store.getters['data/selectedRealm'])
-const realmApps = computed(() => store.getters['data/selectedRealmApps'])
-const appOps = computed(() => util.lOps(realmApps.value))
-const app = computed(() => (_.find(realmApps.value, { id: data.value.app_id }) || {}))
 const enabled = computed(() => !data.value.is_fetched)
+const apps = ref([])
+const appOps = computed(() => _.map(apps.value, x => ({
+  value: x.id,
+  label: x.data.name,
+})))
 
 const fetch = () => {
-  if (isCreating.value) return
+  loading.value = true
+  Promise.all([
+    fetchData(),
+    fetchApps(),
+  ]).catch(err => {
+    $q.notify({ type: 'negative', message: err.data.desc })
+  }).finally(() => {
+    loading.value = false
+  })
+}
 
-  _.each(realmApps.value, app => {
-    _.each(app.perms, perm => {
-      if (perm.id === id.value) {
-        data.value = perm
-        return false
-      }
-    })
-    if (data.value.id) return false
+const fetchData = () => {
+  if (isCreating.value) return
+  return store.dispatch('role/get', id.value).then(resp => {
+    data.value = resp.data
+  })
+}
+
+const fetchApps = () => {
+  if (!selectedRealmId.value) return
+  return store.dispatch('application/list', {
+    realm_id: selectedRealmId.value,
+  }).then(resp => {
+    apps.value = resp.data?.results || []
   })
 }
 
 const onSubmitClick = () => {
-  // loading.value = true
-  // let apps = [...realmApps.value]
-  // if (isCreating.value) {
-  //   apps.push(data.value)
-  // } else {
-  //   apps = _.map(apps, a => (a.id === data.value.id ? data.value : a))
-  // }
-  // updateRealm(apps).then(() => {
-  //   $q.notify({ type: 'positive', message: 'Saved' })
-  //   router.back()
-  // }).finally(() => {
-  //   loading.value = false
-  // })
-
-  // loading.value = true
-  // store.dispatch('perm/save', {
-  //   id: id.value,
-  //   data: data.value,
-  // }).then(() => {
-  //   $q.notify({ type: 'positive', message: t('success_perform_msg') })
-  //   router.back()
-  // }, err => {
-  //   $q.notify({ type: 'negative', message: err.data.desc })
-  //   loading.value = false
-  // })
+  loading.value = true
+  let pr
+  if (isCreating.value) {
+    pr = store.dispatch('role/create', data.value)
+  } else {
+    pr = store.dispatch('role/update', { id: id.value, data: data.value })
+  }
+  pr.then(() => {
+    $q.notify({ type: 'positive', message: t('success_perform_msg') })
+    router.back()
+  }, err => {
+    $q.notify({ type: 'negative', message: err.data.desc })
+    loading.value = false
+  })
 }
 
 const onDeleteClick = () => {
   $q.dialog({
-    message: 'Are you sure you want to delete the permission?',
+    message: 'Are you sure you want to delete the role?',
     ok: { label: 'Yes', noCaps: true },
     cancel: { label: 'Cancel', flat: true, noCaps: true },
   }).onOk(() => {
-    // loading.value = true
-    // store.dispatch('perm/remove', id.value).then(() => {
-    //   $q.notify({ type: 'positive', message: t('success_perform_msg') })
-    //   router.back()
-    // }, err => {
-    //   $q.notify({ type: 'negative', message: err.data.desc })
-    //   loading.value = false
-    // })
+    loading.value = true
+    store.dispatch('role/remove', id.value).then(() => {
+      $q.notify({ type: 'positive', message: t('success_perform_msg') })
+      router.back()
+    }, err => {
+      $q.notify({ type: 'negative', message: err.data.desc })
+      loading.value = false
+    })
   })
-}
-
-const updateRealm = async perms => {
-  let newApp = _.assign({}, app.value, { perms })
-  let apps = _.map(realmApps.value, a => (a.id === app.value.id ? newApp : a))
-  let val = _.assign({}, realm.value.val, { apps })
-  return store.dispatch('data/update', { id: realm.value.id, data: { val } })
 }
 
 onMounted(fetch)

@@ -23,9 +23,9 @@ const router = useRouter()
 
 const menus = computed(() => [
   {
-    label: 'Permissions',
+    label: 'Roles',
     icon: 'fitbit',
-    route: { name: 'perms' },
+    route: { name: 'roles' },
   },
 ])
 </script>
