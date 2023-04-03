@@ -28,39 +28,17 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import { useQuasar } from 'quasar'
 
 const store = useStore()
 const router = useRouter()
-const $q = useQuasar()
 
-const selectedRealmId = computed(() => store.getters['realm/selectedId'])
-const items = ref([])
-const loading = ref(false)
-
-const refreshItems = () => {
-  if (!selectedRealmId.value) return
-  loading.value = true
-  store.dispatch('application/list', {
-    realm_id: selectedRealmId.value,
-  }).then(resp => {
-    items.value = resp.data?.results || []
-  }, err => {
-    $q.notify({ type: 'negative', message: err.data.desc })
-  }).finally(() => {
-    loading.value = false
-  })
-}
+const items = computed(() => store.state.application.list || [])
+const loading = computed(() => store.getters['application/loading'])
 
 const onAddClick = () => {
   router.push({ name: 'app-create' })
 }
-
-watch(() => selectedRealmId.value, () => refreshItems())
-watch(() => store.state.application.changes, () => refreshItems())
-
-onMounted(() => refreshItems())
 </script>

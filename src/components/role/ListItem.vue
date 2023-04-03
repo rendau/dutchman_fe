@@ -1,7 +1,7 @@
 <template>
   <tr class="cursor-pointer" :class="{'text-grey-6': data.is_fetched}">
     <td class="text-no-wrap text-center">
-      {{ data.app_id }}
+      {{ $u.lGetAttr($store.state.application.list, data.app_id, 'data.name') }}
     </td>
 
     <td class="text-no-wrap text-center">

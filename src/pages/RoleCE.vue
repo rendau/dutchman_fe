@@ -103,37 +103,20 @@ const data = ref({
   },
 })
 const enabled = computed(() => !data.value.is_fetched)
-const apps = ref([])
-const appOps = computed(() => _.map(apps.value, x => ({
+const appOps = computed(() => _.map(store.state.application.list, x => ({
   value: x.id,
   label: x.data.name,
 })))
 
 const fetch = () => {
+  if (isCreating.value) return
   loading.value = true
-  Promise.all([
-    fetchData(),
-    fetchApps(),
-  ]).catch(err => {
+  store.dispatch('role/get', id.value).then(resp => {
+    data.value = resp.data
+  }, err => {
     $q.notify({ type: 'negative', message: err.data.desc })
   }).finally(() => {
     loading.value = false
-  })
-}
-
-const fetchData = () => {
-  if (isCreating.value) return
-  return store.dispatch('role/get', id.value).then(resp => {
-    data.value = resp.data
-  })
-}
-
-const fetchApps = () => {
-  if (!selectedRealmId.value) return
-  return store.dispatch('application/list', {
-    realm_id: selectedRealmId.value,
-  }).then(resp => {
-    apps.value = resp.data?.results || []
   })
 }
 

@@ -113,7 +113,7 @@ let util = {
     if (_.isString(list)) {
       list = _store.state.dic[list]
     }
-    return (_.find(list || [], { id }) || {})[attr] || id
+    return _.get(_.find(list || [], { id }) || {}, attr) || id
   },
   lGetAttrJoined (list, ids, attr, sep = ', ') {
     return _.join(_.map(ids || [], x => this.lGetAttr(list, x, attr)), sep)

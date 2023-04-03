@@ -1,5 +1,10 @@
-export function list (ctx, params) {
-  return this.$api.get('app', { params })
+export function list (ctx) {
+  let realm_id = ctx.rootState.realm.selected?.id
+  if (!realm_id) {
+    ctx.commit('setList', [])
+    return
+  }
+  return this.$api.get('app', { params: { realm_id } }).then(resp => ctx.commit('setList', resp.data?.results || []))
 }
 
 export function get (ctx, id) {
@@ -7,13 +12,14 @@ export function get (ctx, id) {
 }
 
 export function create (ctx, data) {
-  return this.$api.post('app', data).finally(() => ctx.commit('setChanges'))
+  return this.$api.post('app', data).then(() => ctx.dispatch('list'))
 }
 
 export function update (ctx, { id, data }) {
-  return this.$api.put(`app/${id}`, data).finally(() => ctx.commit('setChanges'))
+  return this.$api.put(`app/${id}`, data).then(() => ctx.dispatch('list'))
 }
 
 export function remove (ctx, id) {
-  return this.$api.delete(`app/${id}`).finally(() => ctx.commit('setChanges'))
+  if (!id) return
+  return this.$api.delete(`app/${id}`).then(() => ctx.dispatch('list'))
 }

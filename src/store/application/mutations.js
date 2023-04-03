@@ -1,7 +1,3 @@
-export function setChanges (state) {
-  if (state.changes > 10) {
-    state.changes = 0
-  } else {
-    state.changes++
-  }
+export function setList (state, v) {
+  state.list = v
 }

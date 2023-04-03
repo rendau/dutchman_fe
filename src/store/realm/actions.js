@@ -67,6 +67,7 @@ export function select (ctx, id) {
 
 export function setSelected (ctx, data) {
   ctx.commit('setSelected', data || null)
+  return ctx.dispatch('application/list', null, { root: true })
 }
 
 export function deploy (ctx, data) {

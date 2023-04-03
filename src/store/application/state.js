@@ -1,3 +1,4 @@
 export default {
-  changes: 0,
+  list: [],
+  loading: 0,
 }
