@@ -9,7 +9,7 @@
         </ac-page-toolbar>
 
         <div class="relative-position" style="min-height: 50px">
-          <div v-if="!loading && data" class="row">
+          <div v-if="data" class="row">
             <div class="col-12 col-md-10 col-lg-6">
               <div class="row items-start q-col-gutter-md">
                 <!-- is_fetched -->
@@ -20,7 +20,7 @@
                 <!-- app_id -->
                 <div class="col-12 col-md-6">
                   <q-select options-dense outlined map-options emit-value
-                            label="App"
+                            label="Application"
                             :readonly="!enabled"
                             v-model="data.app_id"
                             :options="appOps"/>
@@ -91,7 +91,7 @@ const props = defineProps({
 })
 
 const id = computed(() => route.params.role_id || '')
-const selectedRealmId = computed(() => store.getters['realm/selectedId'])
+const qpAppId = computed(() => route.query.app_id || '')
 const isCreating = computed(() => !id.value)
 const loading = ref(false)
 const data = ref({
@@ -109,7 +109,12 @@ const appOps = computed(() => _.map(store.state.application.list, x => ({
 })))
 
 const fetch = () => {
-  if (isCreating.value) return
+  if (isCreating.value) {
+    if (qpAppId.value) {
+      data.value.app_id = qpAppId.value
+    }
+    return
+  }
   loading.value = true
   store.dispatch('role/get', id.value).then(resp => {
     data.value = resp.data
