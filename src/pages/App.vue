@@ -9,7 +9,7 @@
                 <div>{{ app.name }}</div>
 
                 <!--            <div v-if="!app.active" class="inline-block q-ml-md text-body2 text-weight-regular">not active</div>-->
-                <q-chip v-if="!app.data.active" dense label="not active"
+                <q-chip v-if="!app.active" dense label="not active"
                         color="grey-4" text-color="grey-8" class="q-ml-lg q-px-sm" size=".6rem"/>
               </div>
             </div>
