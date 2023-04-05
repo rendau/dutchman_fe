@@ -59,6 +59,20 @@
 import { useDialogPluginComponent } from 'quasar'
 import { ref } from 'vue'
 
+// optionExample
+// {
+//   value: 'value',
+//   label: 'label',
+//   children: [
+//     {
+//       value: 'value',
+//       label: 'label',
+//       caption: 'caption',
+//       side: 'side',
+//     },
+//   ],
+// }
+
 const props = defineProps({
   options: { type: Array, default: () => [] },
   data: { type: Array, required: true },
