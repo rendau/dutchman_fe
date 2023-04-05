@@ -69,7 +69,7 @@
 
         <div class="q-pt-lg"/>
 
-        <FormJwtValidation v-model:data="data.data.jwt_validation"/>
+        <FormJwtValidation v-model:data="data.data.jwt_validation" :appId="appId"/>
 
         <div class="q-pt-lg"/>
 

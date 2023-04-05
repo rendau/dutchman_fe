@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="relative-position">
     <div class="row items-center rounded-borders br2 q-px-sm q-py-sm"
          :class="disable ? 'cursor-not-allowed' : 'cursor-pointer'"
          style="min-height: 40px" @click="onClick"
@@ -16,6 +16,8 @@
         </div>
       </div>
     </div>
+
+    <ac-spinner :showing="loading"/>
   </div>
 </template>
 
@@ -31,6 +33,7 @@ const props = defineProps({
   emptyLabel: { type: String, default: '' },
   disable: { type: Boolean, default: false },
   options: { type: Array, default: () => [] },
+  loading: { type: Boolean, default: false },
 })
 
 const emits = defineEmits()
