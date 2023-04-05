@@ -40,6 +40,25 @@
 
       <FormBackendBase v-model:data="data.data.backend_base"/>
 
+      <div class="q-pt-lg"/>
+
+      <!-- remote_perms -->
+      <ac-input-group label="Permissions">
+        <!-- url -->
+        <div>
+          <ac-label-input label="URL">
+            <q-input v-model="data.data.remote_perms.url" dense outlined/>
+          </ac-label-input>
+        </div>
+
+        <!-- json_path -->
+        <div>
+          <ac-label-input label="JSON path ('.' delimiter)">
+            <q-input v-model="data.data.remote_perms.json_path" dense outlined/>
+          </ac-label-input>
+        </div>
+      </ac-input-group>
+
       <div class="q-pt-lg q-pb-md"/>
 
       <!-- actions -->
@@ -75,7 +94,8 @@ const props = defineProps({
   mode: { type: String, default: 'create' },
 })
 
-const defaultData = () => ({
+const loading = ref(false)
+const data = ref({
   active: true,
   data: {
     name: '',
@@ -85,12 +105,12 @@ const defaultData = () => ({
       path: '',
     },
     endpoints: [],
-    perms: [],
+    remote_perms: {
+      url: '',
+      json_path: '',
+    },
   },
 })
-
-const loading = ref(false)
-const data = ref(defaultData())
 
 const id = computed(() => (route.params.app_id || ''))
 const realmId = computed(() => store.getters['realm/selectedId'])
@@ -102,6 +122,9 @@ const fetch = () => {
     return
   }
   store.dispatch('application/get', id.value).then(resp => {
+    if (resp.data?.data) {
+      resp.data.data = _.defaultsDeep(resp.data.data, data.value.data)
+    }
     data.value = resp.data
   }, err => {
     $q.notify({ type: 'negative', message: err.data.desc })

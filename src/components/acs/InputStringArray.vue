@@ -22,6 +22,7 @@
 <script setup>
 import { useQuasar } from 'quasar'
 import DEditStringArray from 'components/DEditStringArray.vue'
+import DMultipleSelect from 'components/DMultipleSelect.vue'
 
 const $q = useQuasar()
 
@@ -29,19 +30,32 @@ const props = defineProps({
   modelValue: { type: Array, default: () => [] },
   emptyLabel: { type: String, default: '' },
   disable: { type: Boolean, default: false },
+  options: { type: Array, default: () => [] },
 })
 
 const emits = defineEmits()
 
 const onClick = () => {
   if (props.disable) return
-  $q.dialog({
-    component: DEditStringArray,
-    componentProps: {
-      data: props.modelValue,
-    },
-  }).onOk(data => {
-    emits('update:model-value', data)
-  })
+  if (props.options.length > 0) {
+    $q.dialog({
+      component: DMultipleSelect,
+      componentProps: {
+        options: props.options,
+        data: props.modelValue,
+      },
+    }).onOk(data => {
+      emits('update:model-value', data)
+    })
+  } else {
+    $q.dialog({
+      component: DEditStringArray,
+      componentProps: {
+        data: props.modelValue,
+      },
+    }).onOk(data => {
+      emits('update:model-value', data)
+    })
+  }
 }
 </script>

@@ -95,7 +95,7 @@ const qpAppId = computed(() => route.query.app_id || '')
 const isCreating = computed(() => !id.value)
 const loading = ref(false)
 const data = ref({
-  app_id: null,
+  app_id: '-',
   is_fetched: false,
   data: {
     code: '',
@@ -103,10 +103,13 @@ const data = ref({
   },
 })
 const enabled = computed(() => !data.value.is_fetched)
-const appOps = computed(() => _.map(store.state.application.list, x => ({
-  value: x.id,
-  label: x.data.name,
-})))
+const appOps = computed(() => [
+  { value: '-', label: 'No application'},
+  ..._.map(store.state.application.list, x => ({
+    value: x.id,
+    label: x.data.name,
+  })),
+])
 
 const fetch = () => {
   if (isCreating.value) {
@@ -117,6 +120,7 @@ const fetch = () => {
   }
   loading.value = true
   store.dispatch('role/get', id.value).then(resp => {
+    resp.data.app_id = resp.data.app_id || '-'
     data.value = resp.data
   }, err => {
     $q.notify({ type: 'negative', message: err.data.desc })
