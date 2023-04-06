@@ -115,6 +115,9 @@ let util = {
     }
     return _.get(_.find(list || [], { id }) || {}, attr) || id
   },
+  opsGetAttr (list, value, attr = 'label') {
+    return _.get(_.find(list || [], { value }) || {}, attr) || value
+  },
   lGetAttrJoined (list, ids, attr, sep = ', ') {
     return _.join(_.map(ids || [], x => this.lGetAttr(list, x, attr)), sep)
   },

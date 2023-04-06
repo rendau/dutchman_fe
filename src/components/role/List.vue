@@ -62,6 +62,7 @@ const { loading, results, refresh } = list('role/list', filters.value)
 const appOps = computed(() => {
   return [
     { label: 'All applications', value: null },
+    { label: 'Without application', value: '-' },
     ..._.map(store.state.application.list, (app) => ({ label: app.data.name, value: app.id })),
   ]
 })

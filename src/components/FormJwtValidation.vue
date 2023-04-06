@@ -15,6 +15,7 @@
                                :disable="!enabled"
                                emptyLabel="Any roles"
                                :options="roleOps"
+                               :chip-options="roleChipOps"
                                :loading="loading"
                                @update:model-value="updateKey('roles', $event)"/>
       </ac-label-input>
@@ -41,20 +42,8 @@ const loading = ref(false)
 const apps = computed(() => [{ id: null, data: { name: 'No application' } }, ...store.state.application.list])
 const roles = ref([])
 const roleOps = computed(() => {
-  // {
-  //   value: 'value',
-  //   label: 'label',
-  //   children: [
-  //     {
-  //       value: 'value',
-  //       label: 'label',
-  //       caption: 'caption',
-  //       side: 'side',
-  //     },
-  //   ],
-  // }
   return _.filter(_.map(apps.value, app => {
-    return {
+    let res = {
       value: app.id,
       label: app.data?.name || '',
       children: _.map(_.filter(roles.value, { app_id: app.id }), role => {
@@ -62,11 +51,31 @@ const roleOps = computed(() => {
           value: role.id,
           label: role.data?.code || '',
           caption: role.data?.dsc || '',
-          side: 'side',
+          side: role.is_fetched ? 'fetched' : '',
         }
       }),
     }
+
+    if (app.id === null) {
+      res.children = [
+        ...res.children,
+        ..._.map(_.filter(props.data.roles, id => !_.find(roles.value, { id })), id => ({
+          value: id,
+          label: id,
+        })),
+      ]
+    }
+
+    return res
   }), app => app.children.length > 0)
+})
+const roleChipOps = computed(() => {
+  return _.map(roles.value, role => {
+    return {
+      value: role.id,
+      label: role.data?.dsc || role.data?.code || '',
+    }
+  })
 })
 
 const fetchRoles = () => {

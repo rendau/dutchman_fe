@@ -19,8 +19,8 @@
         </div>
 
         <!-- body -->
-        <div style="height: 330px;" class="q-py-sm">
-          <div class="scroll fit q-px-lg q-py-md">
+        <div style="height: 400px;" class="q-pb-sm">
+          <div class="scroll fit q-px-md q-py-md">
             <q-list separator dense>
               <template v-for="grp in options" :key="`grp-${grp.value}`">
                 <q-item-label class="text-secondary text-weight-medium q-pl-sm q-py-sm">

@@ -7,7 +7,7 @@
       <div class="row items-center q-gutter-y-xs q-gutter-x-sm">
         <div v-for="item in modelValue" :key="item">
           <q-chip dense color="grey-11" text-color="black" class="q-ma-none" :ripple="false">
-            {{ item }}
+            {{ $u.opsGetAttr(chipOptions, item) }}
           </q-chip>
         </div>
 
@@ -33,6 +33,7 @@ const props = defineProps({
   emptyLabel: { type: String, default: '' },
   disable: { type: Boolean, default: false },
   options: { type: Array, default: () => [] },
+  chipOptions: { type: Array, default: () => [] },
   loading: { type: Boolean, default: false },
 })
 
