@@ -23,3 +23,8 @@ export function remove (ctx, id) {
   if (!id) return
   return this.$api.delete(`app/${id}`).then(() => ctx.dispatch('list'))
 }
+
+export function sync_roles (ctx, id) {
+  if (!id) return
+  return this.$api.post(`app/${id}/sync_roles`)
+}

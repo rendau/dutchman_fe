@@ -47,14 +47,28 @@
         <!-- url -->
         <div>
           <ac-label-input label="URL">
-            <q-input v-model="data.data.remote_roles.url" dense outlined/>
+            <q-input v-model="data.data.remote_roles.url" dense outlined :loading="checkingRemoteRoles"
+                     :debounce="500"
+                     @update:model-value="checkRemoteRoles">
+              <template v-if="remoteRolesOk" #append>
+                <q-icon name="task_alt" color="positive" size="1rem"/>
+              </template>
+
+              <template v-if="!isCreating && !!data.data.remote_roles.url" #after>
+                <q-btn v-if="!syncingRoles" flat dense icon="refresh" color="positive" @click="syncRemoteRoles"/>
+
+                <ac-spn v-else/>
+              </template>
+            </q-input>
           </ac-label-input>
         </div>
 
         <!-- json_path -->
         <div>
           <ac-label-input label="JSON path ('.' delimiter)">
-            <q-input v-model="data.data.remote_roles.json_path" dense outlined/>
+            <q-input v-model="data.data.remote_roles.json_path" dense outlined
+                     :debounce="500"
+                     @update:model-value="checkRemoteRoles"/>
           </ac-label-input>
         </div>
       </ac-input-group>
@@ -111,10 +125,12 @@ const data = ref({
     },
   },
 })
-
 const id = computed(() => (route.params.app_id || ''))
 const realmId = computed(() => store.getters['realm/selectedId'])
 const isCreating = computed(() => props.mode === 'create')
+const checkingRemoteRoles = ref(false)
+const remoteRolesOk = ref(false)
+const syncingRoles = ref(false)
 
 const fetch = () => {
   if (isCreating.value) {
@@ -174,6 +190,28 @@ const onDelete = () => {
     }).finally(() => {
       loading.value = false
     })
+  })
+}
+
+const checkRemoteRoles = () => {
+  let remoteRoles = data.value.data.remote_roles
+  if (!remoteRoles.url) return
+  checkingRemoteRoles.value = true
+  remoteRolesOk.value = false
+  store.dispatch('role/fetch_remote_uri', {
+    uri: remoteRoles.url,
+    path: remoteRoles.json_path,
+  }).then(resp => {
+    remoteRolesOk.value = resp.data?.length > 0
+  }).finally(() => {
+    checkingRemoteRoles.value = false
+  })
+}
+
+const syncRemoteRoles = () => {
+  syncingRoles.value = true
+  store.dispatch('application/sync_roles', id.value).catch(() => {}).finally(() => {
+    syncingRoles.value = false
   })
 }
 

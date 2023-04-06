@@ -17,3 +17,7 @@ export function update (ctx, { id, data }) {
 export function remove (ctx, id) {
   return this.$api.delete(`role/${id}`)
 }
+
+export function fetch_remote_uri (ctx, body) {
+  return this.$api.post(`role/fetch_remote_uri`, body)
+}
