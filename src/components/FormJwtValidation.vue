@@ -49,8 +49,8 @@ const roleOps = computed(() => {
       children: _.map(_.filter(roles.value, { app_id: app.id }), role => {
         return {
           value: role.id,
-          label: role.data?.code || '',
-          caption: role.data?.dsc || '',
+          label: role.code || '',
+          caption: role.dsc || '',
           side: role.is_fetched ? 'fetched' : '',
         }
       }),
@@ -73,7 +73,7 @@ const roleChipOps = computed(() => {
   return _.map(roles.value, role => {
     return {
       value: role.id,
-      label: role.data?.dsc || role.data?.code || '',
+      label: role.dsc || role.code || '',
     }
   })
 })

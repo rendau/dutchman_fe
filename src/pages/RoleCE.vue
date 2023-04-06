@@ -33,7 +33,7 @@
                   <q-input outlined
                            :readonly="!enabled"
                            label="Code"
-                           v-model="data.data.code"/>
+                           v-model="data.code"/>
                 </div>
 
                 <!-- dsc -->
@@ -41,7 +41,7 @@
                   <q-input outlined
                            :readonly="!enabled"
                            label="Description"
-                           v-model="data.data.dsc"/>
+                           v-model="data.dsc"/>
                 </div>
               </div>
             </div>
@@ -97,10 +97,8 @@ const loading = ref(false)
 const data = ref({
   app_id: '-',
   is_fetched: false,
-  data: {
-    code: '',
-    dsc: '',
-  },
+  code: '',
+  dsc: '',
 })
 const enabled = computed(() => !data.value.is_fetched)
 const appOps = computed(() => [

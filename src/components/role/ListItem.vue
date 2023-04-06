@@ -5,11 +5,11 @@
     </td>
 
     <td class="text-no-wrap text-center">
-      {{ data.data.code }}
+      {{ data.code }}
     </td>
 
     <td class="text-no-wrap">
-      {{ data.data.dsc }}
+      {{ data.dsc }}
     </td>
 
     <td class="text-no-wrap text-center">

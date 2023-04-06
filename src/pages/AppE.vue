@@ -42,19 +42,19 @@
 
       <div class="q-pt-lg"/>
 
-      <!-- remote_perms -->
+      <!-- remote_roles -->
       <ac-input-group label="Permissions">
         <!-- url -->
         <div>
           <ac-label-input label="URL">
-            <q-input v-model="data.data.remote_perms.url" dense outlined/>
+            <q-input v-model="data.data.remote_roles.url" dense outlined/>
           </ac-label-input>
         </div>
 
         <!-- json_path -->
         <div>
           <ac-label-input label="JSON path ('.' delimiter)">
-            <q-input v-model="data.data.remote_perms.json_path" dense outlined/>
+            <q-input v-model="data.data.remote_roles.json_path" dense outlined/>
           </ac-label-input>
         </div>
       </ac-input-group>
@@ -105,7 +105,7 @@ const data = ref({
       path: '',
     },
     endpoints: [],
-    remote_perms: {
+    remote_roles: {
       url: '',
       json_path: '',
     },
