@@ -118,7 +118,6 @@ const data = ref({
       host: '',
       path: '',
     },
-    endpoints: [],
     remote_roles: {
       url: '',
       json_path: '',
