@@ -1,8 +1,8 @@
 import _ from 'lodash'
-import { util } from 'boot/util'
-import { uid } from 'quasar'
+import {util} from 'boot/util'
+import {uid} from 'quasar'
 
-export function list (ctx) {
+export function list(ctx) {
   ctx.commit('addLoading')
   return this.$api.get('realm').then(resp => {
     let list = resp.data?.results || []
@@ -13,12 +13,12 @@ export function list (ctx) {
   }).finally(() => ctx.commit('doneLoading'))
 }
 
-export function get (ctx, id) {
+export function get(ctx, id) {
   ctx.commit('addLoading')
   return this.$api.get(`realm/${id}`).finally(() => ctx.commit('doneLoading'))
 }
 
-export function create (ctx, data) {
+export function create(ctx, data) {
   ctx.commit('addLoading')
   return this.$api.post('realm', data).then(createResp => {
     return ctx.dispatch('list').then(() => {
@@ -30,7 +30,7 @@ export function create (ctx, data) {
   }).finally(() => ctx.commit('doneLoading'))
 }
 
-export function update (ctx, { id, data }) {
+export function update(ctx, {id, data}) {
   ctx.commit('addLoading')
   return this.$api.put(`realm/${id}`, data).then(() => {
     return ctx.dispatch('list').then(() => {
@@ -42,7 +42,7 @@ export function update (ctx, { id, data }) {
   }).finally(() => ctx.commit('doneLoading'))
 }
 
-export function remove (ctx, id) {
+export function remove(ctx, id) {
   if (!id) return
   ctx.commit('addLoading')
   return this.$api.delete(`realm/${id}`).then(() => {
@@ -53,11 +53,19 @@ export function remove (ctx, id) {
   }).then(() => ctx.dispatch('list')).finally(() => ctx.commit('doneLoading'))
 }
 
-export function refreshSelected (ctx) {
+export function previewConf(ctx, id) {
+  return this.$api.get(`realm/${id}/preview_conf`)
+}
+
+export function deploy(ctx, id) {
+  return this.$api.post(`realm/${id}/deploy`)
+}
+
+export function refreshSelected(ctx) {
   return ctx.dispatch('select', ctx.state.selected?.id || null)
 }
 
-export function select (ctx, id) {
+export function select(ctx, id) {
   ctx.commit('addLoading')
   let pr = id ? ctx.dispatch('get', id) : Promise.resolve()
   pr.then(resp => {
@@ -65,18 +73,12 @@ export function select (ctx, id) {
   }).finally(() => ctx.commit('doneLoading'))
 }
 
-export function setSelected (ctx, data) {
+export function setSelected(ctx, data) {
   ctx.commit('setSelected', data || null)
-  return ctx.dispatch('application/list', null, { root: true })
+  return ctx.dispatch('application/list', null, {root: true})
 }
 
-export function deploy (ctx, data) {
-  let id = ctx.state.selected?.id
-  if (!id) return
-  return this.$api.post(`realm/${id}/deploy`, data)
-}
-
-export function importConf (ctx, json) {
+export function importConf(ctx, json) {
   let realm = ctx.state.selected
   if (!realm || !realm.val) {
     return ''
@@ -189,11 +191,11 @@ export function importConf (ctx, json) {
     })
   })
 
-  let realmNewVal = _.assign({}, realm.val, { apps })
-  return ctx.dispatch('update', { id: realm.id, data: { val: realmNewVal } })
+  let realmNewVal = _.assign({}, realm.val, {apps})
+  return ctx.dispatch('update', {id: realm.id, data: {val: realmNewVal}})
 }
 
-export function generateConf (ctx) {
+export function generateConf(ctx) {
   let realm = ctx.state.selected?.val
   if (!realm) {
     return ''

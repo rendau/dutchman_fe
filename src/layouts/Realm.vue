@@ -3,8 +3,8 @@
     <div class="col">
       <q-select dense outlined
                 emit-value map-options
-                :label="selected ? undefined : 'Realm'"
-                :model-value="selected?.id"
+                :label="selectedId ? undefined : 'Realm'"
+                :model-value="selectedId"
                 :options="ops"
                 :loading="loading"
                 bg-color="blue-1"
@@ -91,6 +91,7 @@ import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import DShowJson from 'components/DShowJson.vue'
+import {previewConf} from "src/store/realm/actions";
 
 const router = useRouter()
 const store = useStore()
@@ -101,6 +102,7 @@ const ops = computed(() => _.map(store.state.realm.list, v => ({
   label: v.data.name,
 })))
 const selected = computed(() => store.getters['realm/selected'])
+const selectedId = computed(() => store.getters['realm/selectedId'])
 const loading = computed(() => store.getters['realm/loading'])
 const slotName = computed(() => (ops.value.length > 0 ? 'after-options' : 'no-option'))
 const importConfigFile = ref(null)
@@ -114,31 +116,31 @@ const onCreateClick = v => {
 }
 
 const onImportConfigFileSelected = async e => {
-  const file = e.target.files.item(0)
-  if (!file) return
-
-  let text
-  try {
-    text = await file.text()
-  } catch (err) {
-    console.error(err)
-    $q.notify({ message: 'Fail to read file', color: 'negative' })
-    return
-  }
-
-  store.dispatch('realm/importConf', text).then(() => {
-    $q.notify({ message: 'Success imported', color: 'positive' })
-  }, err => {
-    $q.notify({ message: err, color: 'negative' })
-  })
+  // const file = e.target.files.item(0)
+  // if (!file) return
+  //
+  // let text
+  // try {
+  //   text = await file.text()
+  // } catch (err) {
+  //   console.error(err)
+  //   $q.notify({ message: 'Fail to read file', color: 'negative' })
+  //   return
+  // }
+  //
+  // store.dispatch('realm/importConf', text).then(() => {
+  //   $q.notify({ message: 'Success imported', color: 'positive' })
+  // }, err => {
+  //   $q.notify({ message: err, color: 'negative' })
+  // })
 }
 
 const onPreviewClick = () => {
-  store.dispatch('realm/generateConf').then(data => {
+  store.dispatch('realm/previewConf', selectedId.value).then(resp => {
     $q.dialog({
       component: DShowJson,
       componentProps: {
-        data: JSON.stringify(data, null, 4),
+        data: JSON.stringify(resp.data, null, 4),
       },
     })
   })
@@ -150,18 +152,10 @@ const onDeployClick = () => {
     ok: { label: 'Yes', noCaps: true },
     cancel: { label: 'Cancel', flat: true, noCaps: true },
   }).onOk(() => {
-    let deployConf = selected.value.val.general?.deploy_conf
-    if (!deployConf) {
-      $q.notify({ message: 'No deploy config', color: 'negative' })
-      return
-    }
-
-    store.dispatch('realm/generateConf').then(config => {
-      store.dispatch('realm/deploy', { config }).then(() => {
-        $q.notify({ message: 'Success deployed', color: 'positive' })
-      }, err => {
-        $q.notify({ message: err.message, color: 'negative' })
-      })
+    store.dispatch('realm/deploy', selectedId.value).then(() => {
+      $q.notify({ message: 'Success deployed', color: 'positive' })
+    }, err => {
+      $q.notify({ message: err.message, color: 'negative' })
     })
   })
 }
