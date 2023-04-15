@@ -49,15 +49,16 @@
           <ac-label-input label="URL">
             <q-input v-model="data.data.remote_roles.url" dense outlined :loading="checkingRemoteRoles"
                      :debounce="500"
-                     @update:model-value="checkRemoteRoles">
+                     @update:model-value="onUpdateRemoteRoles">
               <template v-if="remoteRolesOk" #append>
                 <q-icon name="task_alt" color="positive" size="1rem"/>
               </template>
 
               <template v-if="!isCreating && !!data.data.remote_roles.url" #after>
-                <q-btn v-if="!syncingRoles" flat dense icon="refresh" color="positive" @click="syncRemoteRoles"/>
+                <q-btn v-if="!syncingRoles && !remoteRolesUrlChanged" flat dense icon="refresh" color="positive"
+                       @click="syncRemoteRoles"/>
 
-                <ac-spn v-else/>
+                <ac-spn v-if="syncingRoles"/>
               </template>
             </q-input>
           </ac-label-input>
@@ -92,11 +93,11 @@
 </template>
 
 <script setup>
-import { useRoute, useRouter } from 'vue-router'
-import { computed, onMounted, ref, watch } from 'vue'
-import { useStore } from 'vuex'
-import { useQuasar } from 'quasar'
-import { util } from 'boot/util'
+import {useRoute, useRouter} from 'vue-router'
+import {computed, onMounted, ref, watch} from 'vue'
+import {useStore} from 'vuex'
+import {useQuasar} from 'quasar'
+import {util} from 'boot/util'
 import FormBackendBase from 'components/FormBackendBase.vue'
 
 const route = useRoute()
@@ -105,7 +106,7 @@ const store = useStore()
 const $q = useQuasar()
 
 const props = defineProps({
-  mode: { type: String, default: 'create' },
+  mode: {type: String, default: 'create'},
 })
 
 const loading = ref(false)
@@ -128,6 +129,7 @@ const id = computed(() => (route.params.app_id || ''))
 const realmId = computed(() => store.getters['realm/selectedId'])
 const isCreating = computed(() => props.mode === 'create')
 const checkingRemoteRoles = ref(false)
+const remoteRolesUrlChanged = ref(false)
 const remoteRolesOk = ref(false)
 const syncingRoles = ref(false)
 
@@ -142,7 +144,7 @@ const fetch = () => {
     }
     data.value = resp.data
   }, err => {
-    $q.notify({ type: 'negative', message: err.data.desc })
+    $q.notify({type: 'negative', message: err.data.desc})
   }).finally(() => {
     loading.value = false
   })
@@ -151,7 +153,7 @@ const fetch = () => {
 const onSubmit = () => {
   if (loading.value) return
   if (!data.value.data.name) {
-    $q.notify({ type: 'negative', message: 'Name is required' })
+    $q.notify({type: 'negative', message: 'Name is required'})
     return
   }
   loading.value = true
@@ -160,13 +162,13 @@ const onSubmit = () => {
   if (isCreating.value) {
     pr = store.dispatch('application/create', data.value)
   } else {
-    pr = store.dispatch('application/update', { id: id.value, data: data.value })
+    pr = store.dispatch('application/update', {id: id.value, data: data.value})
   }
   pr.then(() => {
-    $q.notify({ type: 'positive', message: 'Saved' })
+    $q.notify({type: 'positive', message: 'Saved'})
     router.back()
   }, err => {
-    $q.notify({ type: 'negative', message: err.data.desc })
+    $q.notify({type: 'negative', message: err.data.desc})
   }).finally(() => {
     loading.value = false
   })
@@ -177,19 +179,24 @@ const onDelete = () => {
   if (!id.value) return
   $q.dialog({
     message: 'Do you really want to delete this record?',
-    ok: { label: 'Yes', noCaps: true },
-    cancel: { label: 'Cancel', flat: true, noCaps: true },
+    ok: {label: 'Yes', noCaps: true},
+    cancel: {label: 'Cancel', flat: true, noCaps: true},
   }).onOk(() => {
     loading.value = true
     store.dispatch('application/remove', id.value).then(() => {
-      $q.notify({ type: 'positive', message: 'Deleted' })
+      $q.notify({type: 'positive', message: 'Deleted'})
       router.go(-2)
     }, err => {
-      $q.notify({ type: 'negative', message: err.data.desc })
+      $q.notify({type: 'negative', message: err.data.desc})
     }).finally(() => {
       loading.value = false
     })
   })
+}
+
+const onUpdateRemoteRoles = () => {
+  remoteRolesUrlChanged.value = true
+  checkRemoteRoles()
 }
 
 const checkRemoteRoles = () => {
@@ -209,7 +216,8 @@ const checkRemoteRoles = () => {
 
 const syncRemoteRoles = () => {
   syncingRoles.value = true
-  store.dispatch('application/sync_roles', id.value).catch(() => {}).finally(() => {
+  store.dispatch('application/sync_roles', id.value).catch(() => {
+  }).finally(() => {
     syncingRoles.value = false
   })
 }
