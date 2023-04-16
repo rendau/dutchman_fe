@@ -61,6 +61,12 @@ export function deploy(ctx, id) {
   return this.$api.post(`realm/${id}/deploy`)
 }
 
+export function importConf(ctx, {id, data}) {
+  return this.$api.post(`realm/${id}/import_conf`, data).then(resp => {
+    return ctx.dispatch('refreshSelected').then(() => resp)
+  })
+}
+
 export function refreshSelected(ctx) {
   return ctx.dispatch('select', ctx.state.selected?.id || null)
 }
@@ -78,7 +84,7 @@ export function setSelected(ctx, data) {
   return ctx.dispatch('application/list', null, {root: true})
 }
 
-export function importConf(ctx, json) {
+export function importConfOld(ctx, json) {
   let realm = ctx.state.selected
   if (!realm || !realm.val) {
     return ''

@@ -23,7 +23,7 @@
     </div>
 
     <div class="col-auto q-pl-sm">
-      <q-btn dense flat color="primary">
+      <q-btn dense flat color="primary" :loading="deploying">
         <q-icon name="more_horiz" size="1.3rem"/>
 
         <q-menu>
@@ -104,6 +104,7 @@ const ops = computed(() => _.map(store.state.realm.list, v => ({
 const selected = computed(() => store.getters['realm/selected'])
 const selectedId = computed(() => store.getters['realm/selectedId'])
 const loading = computed(() => store.getters['realm/loading'])
+const deploying = ref(false)
 const slotName = computed(() => (ops.value.length > 0 ? 'after-options' : 'no-option'))
 const importConfigFile = ref(null)
 
@@ -116,23 +117,17 @@ const onCreateClick = v => {
 }
 
 const onImportConfigFileSelected = async e => {
-  // const file = e.target.files.item(0)
-  // if (!file) return
-  //
-  // let text
-  // try {
-  //   text = await file.text()
-  // } catch (err) {
-  //   console.error(err)
-  //   $q.notify({ message: 'Fail to read file', color: 'negative' })
-  //   return
-  // }
-  //
-  // store.dispatch('realm/importConf', text).then(() => {
-  //   $q.notify({ message: 'Success imported', color: 'positive' })
-  // }, err => {
-  //   $q.notify({ message: err, color: 'negative' })
-  // })
+  const file = e.target.files.item(0)
+  if (!file) return
+
+  store.dispatch('realm/importConf', {
+    id: selectedId.value,
+    data: file,
+  }).then(() => {
+    $q.notify({ message: 'Success imported', color: 'positive' })
+  }, err => {
+    $q.notify({ message: err, color: 'negative' })
+  })
 }
 
 const onPreviewClick = () => {
@@ -152,10 +147,13 @@ const onDeployClick = () => {
     ok: { label: 'Yes', noCaps: true },
     cancel: { label: 'Cancel', flat: true, noCaps: true },
   }).onOk(() => {
+    deploying.value = true
     store.dispatch('realm/deploy', selectedId.value).then(() => {
       $q.notify({ message: 'Success deployed', color: 'positive' })
     }, err => {
       $q.notify({ message: err.message, color: 'negative' })
+    }).finally(() => {
+      deploying.value = false
     })
   })
 }
