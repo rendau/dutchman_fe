@@ -95,6 +95,7 @@ const qpAppId = computed(() => route.query.app_id || '')
 const isCreating = computed(() => !id.value)
 const loading = ref(false)
 const data = ref({
+  realm_id: store.getters['realm/selectedId'],
   app_id: '-',
   is_fetched: false,
   code: '',

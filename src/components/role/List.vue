@@ -44,35 +44,36 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
-import { useStore } from 'vuex'
+import {computed, onMounted, ref} from 'vue'
+import {useStore} from 'vuex'
 import list from 'src/composables/list'
 
 import ListItem from './ListItem'
 import _ from 'lodash'
-import { useRouter } from 'vue-router'
+import {useRouter} from 'vue-router'
 
 const router = useRouter()
 const store = useStore()
 
 const filters = ref({
+  realm_id: store.getters['realm/selectedId'],
   app_id: null,
 })
-const { loading, results, refresh } = list('role/list', filters.value)
+const {loading, results, refresh} = list('role/list', filters.value)
 const appOps = computed(() => {
   return [
-    { label: 'All applications', value: null },
-    { label: 'Without application', value: '-' },
-    ..._.map(store.state.application.list, app => ({ label: app.data.name, value: app.id })),
+    {label: 'All applications', value: null},
+    {label: 'Without application', value: '-'},
+    ..._.map(store.state.application.list, app => ({label: app.data.name, value: app.id})),
   ]
 })
 
 const onAddClick = () => {
-  router.push({ name: 'roles-role_ce', query: { app_id: filters.value.app_id || undefined } })
+  router.push({name: 'roles-role_ce', query: {app_id: filters.value.app_id || undefined}})
 }
 
 const onItemClick = item => {
-  router.push({ name: 'roles-role_ce', params: { role_id: item.id } })
+  router.push({name: 'roles-role_ce', params: {role_id: item.id}})
 }
 
 onMounted(refresh)
