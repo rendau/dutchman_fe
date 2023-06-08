@@ -72,7 +72,7 @@ const roleOps = computed(() => {
 const roleChipOps = computed(() => {
   return _.map(roles.value, role => {
     return {
-      value: role.id,
+      value: role.code,
       label: role.dsc || role.code || '',
     }
   })
