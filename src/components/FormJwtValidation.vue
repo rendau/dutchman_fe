@@ -48,7 +48,7 @@ const roleOps = computed(() => {
       label: app.data?.name || '',
       children: _.map(_.filter(roles.value, { app_id: app.id }), role => {
         return {
-          value: role.id,
+          value: role.code,
           label: role.dsc || '',
           caption: role.code || '',
           side: role.is_fetched ? 'fetched' : '',
@@ -59,9 +59,9 @@ const roleOps = computed(() => {
     if (app.id === null) {
       res.children = [
         ...res.children,
-        ..._.map(_.filter(props.data.roles, id => !_.find(roles.value, { id })), id => ({
-          value: id,
-          label: id,
+        ..._.map(_.filter(props.data.roles, code => !_.find(roles.value, { code })), code => ({
+          value: code,
+          label: code,
         })),
       ]
     }
