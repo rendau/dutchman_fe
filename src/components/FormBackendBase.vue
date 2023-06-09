@@ -30,17 +30,6 @@ const emits = defineEmits()
 
 const updateKey = (key, value) => {
   let obj = { [key]: value }
-  if (key === 'host') {
-    let u = util.parseUrl(value)
-    if (u) {
-      obj[key] = u.origin
-      if (u.pathname && u.pathname !== '/' && !props.data.path) {
-        obj['path'] = util.normalizePath(u.pathname)
-      }
-    }
-  } else if (key === 'path') {
-    obj[key] = util.normalizePath(value)
-  }
   emits('update:data', _.assign({}, props.data, obj))
 }
 </script>
