@@ -49,7 +49,7 @@ const onCopyClick = () => {
   copyToClipboard(props.data).then(() => {
     $q.notify({ type: 'positive', message: 'Success copy!' })
   }, err => {
-    $q.notify({ type: 'negative', message: err })
+    $q.notify({ type: 'negative', message: err.data.desc })
   })
 }
 </script>

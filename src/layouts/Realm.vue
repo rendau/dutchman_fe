@@ -86,10 +86,10 @@
 
 <script setup>
 import _ from 'lodash'
-import { computed, ref } from 'vue'
-import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
-import { useQuasar } from 'quasar'
+import {computed, ref} from 'vue'
+import {useStore} from 'vuex'
+import {useRouter} from 'vue-router'
+import {useQuasar} from 'quasar'
 import DShowJson from 'components/DShowJson.vue'
 import {previewConf} from "src/store/realm/actions";
 
@@ -113,21 +113,27 @@ const onInput = v => {
 }
 
 const onCreateClick = v => {
-  router.push({ name: 'realm-create' })
+  router.push({name: 'realm-create'})
 }
 
 const onImportConfigFileSelected = async e => {
   const file = e.target.files.item(0)
   if (!file) return
 
-  store.dispatch('realm/importConf', {
-    id: selectedId.value,
-    data: file,
-  }).then(() => {
-    $q.notify({ message: 'Success imported', color: 'positive' })
-  }, err => {
-    $q.notify({ message: err, color: 'negative' })
-  })
+  let fr = new FileReader()
+  fr.onload = function () {
+    store.dispatch('realm/importConf', {
+      id: selectedId.value,
+      data: fr.result,
+    }).then(() => {
+      $q.notify({message: 'Success imported', color: 'positive'})
+    }, err => {
+      $q.notify({message: err.data.desc, color: 'negative'})
+    })
+  }
+  fr.readAsText(file)
+
+  return true
 }
 
 const onPreviewClick = () => {
@@ -144,14 +150,14 @@ const onPreviewClick = () => {
 const onDeployClick = () => {
   $q.dialog({
     message: 'Do you really want to deploy config?',
-    ok: { label: 'Yes', noCaps: true },
-    cancel: { label: 'Cancel', flat: true, noCaps: true },
+    ok: {label: 'Yes', noCaps: true},
+    cancel: {label: 'Cancel', flat: true, noCaps: true},
   }).onOk(() => {
     deploying.value = true
     store.dispatch('realm/deploy', selectedId.value).then(() => {
-      $q.notify({ message: 'Success deployed', color: 'positive' })
+      $q.notify({message: 'Success deployed', color: 'positive'})
     }, err => {
-      $q.notify({ message: err.message, color: 'negative' })
+      $q.notify({message: err.data.desc, color: 'negative'})
     }).finally(() => {
       deploying.value = false
     })
