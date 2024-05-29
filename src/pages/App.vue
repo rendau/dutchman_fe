@@ -6,11 +6,11 @@
           <ac-page-title>
             <div class="text-bold">
               <div class="row no-wrap items-center">
-                <div>{{ app.name }}</div>
+                <div>{{ app.data.name }}</div>
 
                 <!--            <div v-if="!app.active" class="inline-block q-ml-md text-body2 text-weight-regular">not active</div>-->
                 <q-chip v-if="!app.active" dense label="not active"
-                        color="grey-4" text-color="grey-8" class="q-ml-lg q-px-sm" size=".6rem"/>
+                        color="grey-4" text-color="grey-8" class="q-ml-lg q-px-sm" size=".6rem" />
               </div>
             </div>
 
@@ -24,30 +24,36 @@
               <div class="inline-block text-grey-8" style="min-width: 100px">Backend Url:</div>
               <span class="text-grey-6">{{
                   $u.concatUrlPath(app.data.backend_base?.host || '', app.data.backend_base?.path)
-                }}</span>
+                                        }}</span>
             </div>
           </ac-page-title>
 
-          <q-space/>
+          <q-space />
 
           <div>
-            <q-btn flat round icon="edit" color="primary" @click="onEditClick"/>
+            <div class="q-mr-sm">
+              <q-btn flat round icon="content_copy" color="primary" @click="onDuplicateClick" />
+            </div>
+          </div>
+
+          <div>
+            <q-btn flat round icon="edit" color="primary" @click="onEditClick" />
           </div>
         </ac-page-toolbar>
 
         <!-- body -->
         <div>
           <div v-if="app">
-            <EndpointList :app_id="id"/>
+            <EndpointList :app_id="id" />
           </div>
         </div>
       </template>
 
-      <ac-spinner :showing="loading"/>
+      <ac-spinner :showing="loading" />
     </div>
   </div>
 
-  <router-view v-else/>
+  <router-view v-else />
 </template>
 
 <script setup>
@@ -57,6 +63,7 @@ import { useStore } from 'vuex'
 import EndpointList from 'components/endpoint/List'
 import { useQuasar } from 'quasar'
 import { cns } from 'boot/cns'
+import DAppDuplicate from 'components/DAppDuplicate.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -82,15 +89,39 @@ const fetch = () => {
     if (err.data.code === cns.ErrObjectNotFound) {
       router.back()
     } else {
-      $q.notify({ type: 'negative', message: err.data.desc })
+      $q.notify({type: 'negative', message: err.data.desc})
     }
   }).finally(() => {
     loading.value = false
   })
 }
 
+const onDuplicateClick = () => {
+  // console.log('duplicate', app.value)
+  $q.dialog({
+    component: DAppDuplicate,
+    componentProps: {
+      realmId: app.value.realm_id,
+      name: app.value.data.name,
+    },
+  }).onOk(data => {
+    loading.value = true
+    store.dispatch('application/duplicate', {
+      id: id.value,
+      data: {
+        new_realm_id: data.realm_id || null,
+        new_name: data.name || null,
+      }
+    }).catch(err => {
+      $q.notify({type: 'negative', message: err.data.desc})
+    }).finally(() => {
+      loading.value = false
+    })
+  })
+}
+
 const onEditClick = () => {
-  router.push({ name: 'app-edit', params: { app_id: id.value } })
+  router.push({name: 'app-edit', params: {app_id: id.value}})
 }
 
 watch(() => route.name, () => {
