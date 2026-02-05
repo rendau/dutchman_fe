@@ -6,9 +6,12 @@
         Endpoints:
       </div>
 
-      <div v-if="results.length">
+      <div v-if="results.length" class="row">
+
+        <q-btn dense flat round icon="download" color="primary" size=".9rem" @click="onDownload"/>
         <!-- add button -->
         <q-btn dense flat round icon="add" color="primary" size=".9rem" @click="onAddClick"/>
+
       </div>
     </div>
 
@@ -36,38 +39,51 @@
     </div>
 
     <ac-spinner :showing="loading"/>
+
+    <q-dialog v-model="isDownloadOpen">
+      <q-card>
+        <q-card-section>
+          <SelectableList :grouped-items="groupedItems"/>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
-import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
+import {computed, onMounted, ref} from 'vue'
+import {useStore} from 'vuex'
+import {useRouter} from 'vue-router'
 import list from 'src/composables/list'
 import ListItem from './ListItem.vue'
+import SelectableList from "components/endpoint/SelectableList.vue";
 
 const store = useStore()
 const router = useRouter()
 
 const props = defineProps({
-  app_id: { type: String, required: true },
+  app_id: {type: String, required: true},
 })
 
-const { loading, results, refresh } = list('endpoint/list', { app_id: props.app_id })
+const isDownloadOpen = ref(false)
+const {loading, results, refresh} = list('endpoint/list', {app_id: props.app_id})
 
 const groupedItems = computed(() => {
   return _.sortBy(_.map(_.groupBy(results.value, x => _.head(_.split(x.data.path, '/'))), (v, k) => {
-    return { path: k, items: v }
+    return {path: k, items: v}
   }), 'path')
 })
 
+
 const onAddClick = () => {
-  router.push({ name: 'endpoint-create' })
+  router.push({name: 'endpoint-create'})
 }
 
 const onItemClick = item => {
-  router.push({ name: 'endpoint-edit', params: { endpoint_id: item.id } })
+  router.push({name: 'endpoint-edit', params: {endpoint_id: item.id}})
 }
+
+const onDownload = () => isDownloadOpen.value = true
 
 onMounted(refresh)
 
