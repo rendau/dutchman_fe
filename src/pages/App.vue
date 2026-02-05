@@ -103,6 +103,7 @@ const onDuplicateClick = () => {
     componentProps: {
       realmId: app.value.realm_id,
       name: app.value.data.name,
+      host: app.value.data.backend_base.host
     },
   }).onOk(data => {
     loading.value = true
@@ -111,6 +112,7 @@ const onDuplicateClick = () => {
       data: {
         new_realm_id: data.realm_id || null,
         new_name: data.name || null,
+        new_host: data.host || null
       }
     }).catch(err => {
       $q.notify({type: 'negative', message: err.data.desc})
