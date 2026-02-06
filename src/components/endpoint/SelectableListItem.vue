@@ -1,7 +1,7 @@
 <template>
-  <tr class="cursor-pointer" :class="{'text-grey-6': !data.active}">
+  <tr class="cursor-pointer" :class="{'text-grey-6': !data.active}" >
     <td>
-      <q-checkbox v-model="data.isChecked"/>
+      <q-checkbox v-model="modelValue" @update:model-value="$emit('update:modelValue', modelValue)"/>
     </td>
     <td class="text-right text-no-wrap text-weight-light min-width">
       <div style="min-width: 56px">
@@ -28,6 +28,9 @@
 <script setup>
 const props = defineProps({
   data: { type: Object, required: true },
+  modelValue: Boolean
 })
+
+defineEmits(['update:modelValue'])
 
 </script>

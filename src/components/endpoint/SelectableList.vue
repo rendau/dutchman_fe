@@ -1,6 +1,6 @@
 <script setup>
 import SelectableListItem from "components/endpoint/SelectableListItem.vue";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 
 const props = defineProps({
   groupedItems: Object
@@ -11,11 +11,13 @@ const values = ref(props.groupedItems.map(group => ({
   items: group.items.map(item => ({...item, isChecked: true}))
 })))
 
+const isAllChecked = computed(() => values.value.map(group => group.items.map(item => item.isChecked)).flat().some(value => !value))
+
 function onImport() {
   const data = JSON.stringify(values.value.map((group) => ({
     ...group,
-    items: group.items.filter(item => item.isChecked).map(item => ({...item, isChecked: undefined}))
-  })).filter(group => group.items.length), null, 2)
+    items: group.items.filter(item => item.isChecked).map(item => ({...item, isChecked: undefined, app_id: undefined, id: undefined}))
+  })).filter(group => group.items.length).flatMap(item => item.items).flat(), null, 2)
 
   const blob = new Blob([data], {type: 'text/plain;charset=utf-8'})
   const url = URL.createObjectURL(blob)
@@ -27,6 +29,11 @@ function onImport() {
 
   URL.revokeObjectURL(url)
 }
+
+function onSelectAll() {
+  if (isAllChecked.value) values.value.forEach(group => group.items.forEach(item => item.isChecked = true))
+  else values.value.forEach(group => group.items.forEach(item => item.isChecked = false))
+}
 </script>
 
 <template>
@@ -35,15 +42,15 @@ function onImport() {
       <div class="text-subtitle2 q-pb-xs text-grey-8">
         Endpoints:
       </div>
+      <q-btn color="primary" size="md" flat dense :label="isAllChecked ? 'Select All' : 'Deselect All'" @click="onSelectAll" />
       <q-list v-for="group in values" :key="`grp-${group.path}`">
         <div class="text-subtitle1 text-weight-medium text-grey-8 q-pb-sm">
           /{{ group.path }}
         </div>
-
         <div class="q-pl-md">
           <q-markup-table flat bordered wrap-cells dense class="relative-position">
             <tbody>
-            <SelectableListItem v-for="item in group.items" :key="`item-${item.id}`" :data="item"/>
+            <SelectableListItem v-for="item in group.items" :key="`item-${group.path}-${item.id}`" :data="item" v-model="item.isChecked"/>
             </tbody>
           </q-markup-table>
         </div>

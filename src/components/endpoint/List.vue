@@ -6,8 +6,16 @@
         Endpoints:
       </div>
 
+      <input
+        ref="fileInput"
+        type="file"
+        accept=".json,.txt"
+        class="hidden"
+        @change="onFile"
+      />
       <div v-if="results.length" class="row">
 
+        <q-btn dense flat round icon="upload" color="primary" size=".9rem" @click="fileInput?.click()"/>
         <q-btn dense flat round icon="download" color="primary" size=".9rem" @click="onDownload"/>
         <!-- add button -->
         <q-btn dense flat round icon="add" color="primary" size=".9rem" @click="onAddClick"/>
@@ -32,9 +40,20 @@
         </div>
       </div>
 
-      <div v-if="!results.length">
-        <q-btn dense flat no-caps icon="add" label="add endpoint" color="primary"
-               class="full-width" @click="onAddClick"/>
+      <div v-if="!results.length" class="row">
+        <q-btn dense flat no-caps icon="add" label="add endpoint" color="primary" class="col-6"
+              @click="onAddClick"/>
+
+        <q-btn
+          dense
+          flat
+          no-caps
+          icon="upload"
+          label="Import endpoints"
+          color="primary"
+          class="col-6"
+          @click="fileInput?.click()"
+        />
       </div>
     </div>
 
@@ -65,6 +84,7 @@ const props = defineProps({
   app_id: {type: String, required: true},
 })
 
+const fileInput = ref(null)
 const isDownloadOpen = ref(false)
 const {loading, results, refresh} = list('endpoint/list', {app_id: props.app_id})
 
@@ -84,6 +104,23 @@ const onItemClick = item => {
 }
 
 const onDownload = () => isDownloadOpen.value = true
+
+const onFile = (e) => {
+  const file = (e.target).files?.[0]
+  if (!file) return
+
+  const reader = new FileReader()
+
+  reader.onload = () => {
+    try {
+      const json = JSON.parse(reader.result)
+    } catch (e) {
+      console.error('Invalid JSON', e)
+    }
+  }
+
+  reader.readAsText(file)
+}
 
 onMounted(refresh)
 
