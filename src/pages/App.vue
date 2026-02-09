@@ -44,7 +44,7 @@
         <!-- body -->
         <div>
           <div v-if="app">
-            <EndpointList :app_id="id" />
+            <EndpointList :app_id="id" @updated="fetch"/>
           </div>
         </div>
       </template>

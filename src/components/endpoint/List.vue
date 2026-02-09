@@ -42,7 +42,7 @@
 
       <div v-if="!results.length" class="row">
         <q-btn dense flat no-caps icon="add" label="add endpoint" color="primary" class="col-6"
-              @click="onAddClick"/>
+               @click="onAddClick"/>
 
         <q-btn
           dense
@@ -66,6 +66,8 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+
+
   </div>
 </template>
 
@@ -76,17 +78,22 @@ import {useRouter} from 'vue-router'
 import list from 'src/composables/list'
 import ListItem from './ListItem.vue'
 import SelectableList from "components/endpoint/SelectableList.vue";
+import {Dialog, useQuasar} from "quasar";
+import CompareModal from "components/endpoint/CompareModal.vue";
 
 const store = useStore()
 const router = useRouter()
+const $q = useQuasar()
 
 const props = defineProps({
   app_id: {type: String, required: true},
 })
+const emit = defineEmits('updated')
 
 const fileInput = ref(null)
 const isDownloadOpen = ref(false)
 const {loading, results, refresh} = list('endpoint/list', {app_id: props.app_id})
+const endpoints = ref({newEndpoint: null, oldEndpoint: null})
 
 const groupedItems = computed(() => {
   return _.sortBy(_.map(_.groupBy(results.value, x => _.head(_.split(x.data.path, '/'))), (v, k) => {
@@ -111,15 +118,37 @@ const onFile = (e) => {
 
   const reader = new FileReader()
 
-  reader.onload = () => {
+  reader.onload = async () => {
     try {
       const json = JSON.parse(reader.result)
+      await onImport(json).then(() => {
+          $q.notify({type: 'positive', message: 'Saved'})
+          emit('updated')
+        }
+      )
     } catch (e) {
+      $q.notify({type: 'negative', message: e})
       console.error('Invalid JSON', e)
     }
   }
 
   reader.readAsText(file)
+}
+
+const onImport = async (data) => {
+  const oldValues = results.value.map(item => (JSON.stringify({...item, id: undefined})))
+  for (const item of data) {
+    const payload = {app_id: props.app_id, ...item}
+    if (!oldValues.includes(JSON.stringify(payload))) {
+      const sameEndpoint = results.value.find(endpoint => endpoint.data.method === payload.data.method && endpoint.data.path === payload.data.path)
+      if (sameEndpoint) {
+        endpoints.value.oldEndpoint = sameEndpoint
+        endpoints.value.newEndpoint = payload
+      } else {
+        await store.dispatch('endpoint/create', payload)
+      }
+    }
+  }
 }
 
 onMounted(refresh)
