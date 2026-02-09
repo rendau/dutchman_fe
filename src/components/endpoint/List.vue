@@ -92,7 +92,6 @@ const props = defineProps({
 const fileInput = ref(null)
 const isDownloadOpen = ref(false)
 const {loading, results, refresh} = list('endpoint/list', {app_id: props.app_id})
-const endpoints = ref({newEndpoint: null, oldEndpoint: null})
 
 const groupedItems = computed(() => {
   return _.sortBy(_.map(_.groupBy(results.value, x => _.head(_.split(x.data.path, '/'))), (v, k) => {
@@ -141,13 +140,35 @@ const onImport = async (data) => {
     if (!oldValues.includes(JSON.stringify(payload))) {
       const sameEndpoint = results.value.find(endpoint => endpoint.data.method === payload.data.method && endpoint.data.path === payload.data.path)
       if (sameEndpoint) {
-        endpoints.value.oldEndpoint = sameEndpoint
-        endpoints.value.newEndpoint = payload
+        const oldEndpoint = {...sameEndpoint, id: undefined}
+        await openCompareModal({
+          newEndpoint: payload,
+          oldEndpoint
+        }, (selected) => store.dispatch('endpoint/update', {
+          id: sameEndpoint.id,
+          data: {...selected, app_id: props.app_id}
+        }))
       } else {
         await store.dispatch('endpoint/create', payload)
       }
     }
   }
+}
+
+const openCompareModal = (endpoints, onSuccess) => {
+  return new Promise((resolve, reject) => {
+    $q.dialog({
+      component: CompareModal,
+      componentProps: {endpoints},
+      maximized: true
+    })
+      .onOk(result => {
+        onSuccess?.(result)
+        resolve(result)
+      })
+      .onCancel(() => resolve(null))
+      .onDismiss(() => resolve(null))
+  })
 }
 
 onMounted(refresh)
