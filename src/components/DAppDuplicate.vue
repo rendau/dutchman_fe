@@ -33,6 +33,9 @@
             <div>
               <q-input v-model="name" label="New name" outlined />
             </div>
+            <div>
+              <q-input v-model="host" label="New host" outlined />
+            </div>
           </div>
         </div>
       </div>
@@ -52,6 +55,7 @@ const store = useStore()
 const props = defineProps({
   realmId : { type: String },
   name: { type: String },
+  host: { type: String }
 })
 
 defineEmits([
@@ -62,6 +66,7 @@ const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } = useDialogPluginC
 
 const selectedRealmId = ref(props.realmId || null)
 const name = ref(props.name || null)
+const host = ref(props.host || null)
 const realmOps = computed(() => _.map(store.state.realm.list, v => ({
   value: v.id,
   label: v.data.name,
@@ -71,6 +76,7 @@ const onSaveClick = () => {
   onDialogOK({
     realm_id: selectedRealmId.value,
     name: name.value,
+    host: host.value
   })
 }
 </script>

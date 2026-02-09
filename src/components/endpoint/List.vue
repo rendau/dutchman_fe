@@ -6,9 +6,20 @@
         Endpoints:
       </div>
 
-      <div v-if="results.length">
+      <input
+        ref="fileInput"
+        type="file"
+        accept=".json,.txt"
+        class="hidden"
+        @change="onFile"
+      />
+      <div v-if="results.length" class="row">
+
+        <q-btn dense flat round icon="upload" color="primary" size=".9rem" @click="fileInput?.click()"/>
+        <q-btn dense flat round icon="download" color="primary" size=".9rem" @click="onDownload"/>
         <!-- add button -->
         <q-btn dense flat round icon="add" color="primary" size=".9rem" @click="onAddClick"/>
+
       </div>
     </div>
 
@@ -29,44 +40,135 @@
         </div>
       </div>
 
-      <div v-if="!results.length">
-        <q-btn dense flat no-caps icon="add" label="add endpoint" color="primary"
-               class="full-width" @click="onAddClick"/>
+      <div v-if="!results.length" class="row">
+        <q-btn dense flat no-caps icon="add" label="add endpoint" color="primary" class="col-6"
+               @click="onAddClick"/>
+
+        <q-btn
+          dense
+          flat
+          no-caps
+          icon="upload"
+          label="Import endpoints"
+          color="primary"
+          class="col-6"
+          @click="fileInput?.click()"
+        />
       </div>
     </div>
 
     <ac-spinner :showing="loading"/>
+
+    <q-dialog v-model="isDownloadOpen">
+      <q-card>
+        <q-card-section>
+          <SelectableList :grouped-items="groupedItems" :app-id="app_id"/>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
-import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
+import {computed, onMounted, ref} from 'vue'
+import {useStore} from 'vuex'
+import {useRouter} from 'vue-router'
 import list from 'src/composables/list'
 import ListItem from './ListItem.vue'
+import SelectableList from "components/endpoint/SelectableList.vue";
+import { useQuasar} from "quasar";
+import CompareModal from "components/endpoint/CompareModal.vue";
 
 const store = useStore()
 const router = useRouter()
+const $q = useQuasar()
 
 const props = defineProps({
-  app_id: { type: String, required: true },
+  app_id: {type: String, required: true},
 })
 
-const { loading, results, refresh } = list('endpoint/list', { app_id: props.app_id })
+const fileInput = ref(null)
+const isDownloadOpen = ref(false)
+const {loading, results, refresh} = list('endpoint/list', {app_id: props.app_id})
 
 const groupedItems = computed(() => {
   return _.sortBy(_.map(_.groupBy(results.value, x => _.head(_.split(x.data.path, '/'))), (v, k) => {
-    return { path: k, items: v }
+    return {path: k, items: v}
   }), 'path')
 })
 
+
 const onAddClick = () => {
-  router.push({ name: 'endpoint-create' })
+  router.push({name: 'endpoint-create'})
 }
 
 const onItemClick = item => {
-  router.push({ name: 'endpoint-edit', params: { endpoint_id: item.id } })
+  router.push({name: 'endpoint-edit', params: {endpoint_id: item.id}})
+}
+
+const onDownload = () => isDownloadOpen.value = true
+
+const onFile = (e) => {
+  const file = (e.target).files?.[0]
+  if (!file) return
+
+  const reader = new FileReader()
+
+  reader.onload = async () => {
+    try {
+      const json = JSON.parse(reader.result)
+      await onImport(json).then(async () => {
+          $q.notify({type: 'positive', message: 'Saved'})
+          await refresh()
+        }
+      )
+    } catch (e) {
+      $q.notify({type: 'negative', message: e})
+      console.error('Invalid JSON', e)
+    }
+  }
+
+  reader.readAsText(file)
+}
+
+const onImport = async (data) => {
+  const oldValues = results.value.map(item => (JSON.stringify({...item, id: undefined})))
+  for (const item of data) {
+    const payload = {app_id: props.app_id, ...item}
+    if (!oldValues.includes(JSON.stringify(payload))) {
+      const sameEndpoint = results.value.find(endpoint => endpoint.data.method === payload.data.method && endpoint.data.path === payload.data.path)
+      if (sameEndpoint) {
+        const oldEndpoint = {...sameEndpoint, id: undefined}
+        await openCompareModal({
+          newEndpoint: payload,
+          oldEndpoint
+        }, (selected) => store.dispatch('endpoint/update', {
+          id: sameEndpoint.id,
+          data: {...selected, app_id: props.app_id}
+        }))
+      } else {
+        await store.dispatch('endpoint/create', payload)
+      }
+    }
+  }
+}
+
+const openCompareModal = (endpoints, onSuccess) => {
+  return new Promise((resolve, reject) => {
+    $q.dialog({
+      component: CompareModal,
+      componentProps: {endpoints},
+      maximized: true
+    })
+      .onOk(result => {
+        onSuccess?.(result)
+        resolve(result)
+      })
+      .onCancel(() => resolve(null))
+      .onDismiss(() => resolve(null))
+  })
 }
 
 onMounted(refresh)
