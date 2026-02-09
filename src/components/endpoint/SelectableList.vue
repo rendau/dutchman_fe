@@ -3,7 +3,8 @@ import SelectableListItem from "components/endpoint/SelectableListItem.vue";
 import {computed, ref} from "vue";
 
 const props = defineProps({
-  groupedItems: Object
+  groupedItems: Object,
+  appId: String
 })
 
 const values = ref(props.groupedItems.map(group => ({
@@ -24,7 +25,7 @@ function onImport() {
 
   const a = document.createElement('a')
   a.href = url
-  a.download = 'data.txt'
+  a.download = `${props.appId}.txt`
   a.click()
 
   URL.revokeObjectURL(url)

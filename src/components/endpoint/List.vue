@@ -62,7 +62,7 @@
     <q-dialog v-model="isDownloadOpen">
       <q-card>
         <q-card-section>
-          <SelectableList :grouped-items="groupedItems"/>
+          <SelectableList :grouped-items="groupedItems" :app-id="app_id"/>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -78,7 +78,7 @@ import {useRouter} from 'vue-router'
 import list from 'src/composables/list'
 import ListItem from './ListItem.vue'
 import SelectableList from "components/endpoint/SelectableList.vue";
-import {Dialog, useQuasar} from "quasar";
+import { useQuasar} from "quasar";
 import CompareModal from "components/endpoint/CompareModal.vue";
 
 const store = useStore()
