@@ -88,7 +88,6 @@ const $q = useQuasar()
 const props = defineProps({
   app_id: {type: String, required: true},
 })
-const emit = defineEmits('updated')
 
 const fileInput = ref(null)
 const isDownloadOpen = ref(false)
@@ -121,9 +120,9 @@ const onFile = (e) => {
   reader.onload = async () => {
     try {
       const json = JSON.parse(reader.result)
-      await onImport(json).then(() => {
+      await onImport(json).then(async () => {
           $q.notify({type: 'positive', message: 'Saved'})
-          emit('updated')
+          await refresh()
         }
       )
     } catch (e) {
