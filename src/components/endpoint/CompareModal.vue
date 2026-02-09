@@ -1,6 +1,7 @@
 <script setup>
-import { ref } from 'vue'
-import { useDialogPluginComponent } from 'quasar'
+import {computed, ref} from 'vue'
+import {useDialogPluginComponent} from 'quasar'
+import ObjectDiffViewer from "components/endpoint/ObjectDiffViewer.vue";
 
 const props = defineProps({
   endpoints: {
@@ -13,7 +14,7 @@ defineEmits([
   ...useDialogPluginComponent.emits
 ])
 
-const { dialogRef, onDialogOK, onDialogHide } = useDialogPluginComponent()
+const {dialogRef, onDialogOK, onDialogHide} = useDialogPluginComponent()
 
 const selected = ref(null)
 
@@ -32,6 +33,47 @@ const confirm = () => {
     onDialogOK(props.endpoints.newEndpoint)
   }
 }
+
+const diffObjects = (oldObj, newObj, path = '') => {
+  let diffs = []
+
+  const keys = new Set([
+    ...Object.keys(oldObj || {}),
+    ...Object.keys(newObj || {})
+  ])
+
+  for (const key of keys) {
+    const oldVal = oldObj?.[key]
+    const newVal = newObj?.[key]
+    const currentPath = path ? `${path}.${key}` : key
+
+    if (
+      typeof oldVal === 'object' &&
+      typeof newVal === 'object' &&
+      oldVal &&
+      newVal &&
+      !Array.isArray(oldVal) &&
+      !Array.isArray(newVal)
+    ) {
+      diffs.push(...diffObjects(oldVal, newVal, currentPath))
+    } else if (JSON.stringify(oldVal) !== JSON.stringify(newVal)) {
+      diffs.push(currentPath)
+    }
+  }
+
+  return diffs
+}
+
+const diffPaths = computed(() =>
+  new Set(
+    diffObjects(
+      props.endpoints.oldEndpoint,
+      props.endpoints.newEndpoint
+    )
+  )
+)
+
+const isDiff = (path) => diffPaths.value.has(path)
 </script>
 
 <template>
@@ -46,7 +88,7 @@ const confirm = () => {
         </div>
       </q-card-section>
 
-      <q-separator />
+      <q-separator/>
 
       <!-- CONTENT -->
       <q-card-section class="row q-col-gutter-md flex-1 overflow-hidden">
@@ -63,10 +105,13 @@ const confirm = () => {
             Existing endpoint
           </q-card-section>
 
-          <q-separator />
+          <q-separator/>
 
           <q-card-section class="scroll">
-            <pre>{{ endpoints.oldEndpoint }}</pre>
+            <ObjectDiffViewer
+              :value="endpoints.oldEndpoint"
+              :is-diff="isDiff"
+            />
           </q-card-section>
 
           <q-card-actions align="right">
@@ -91,10 +136,13 @@ const confirm = () => {
             Imported endpoint
           </q-card-section>
 
-          <q-separator />
+          <q-separator/>
 
           <q-card-section class="scroll">
-            <pre>{{ endpoints.newEndpoint }}</pre>
+            <ObjectDiffViewer
+              :value="endpoints.newEndpoint"
+              :is-diff="isDiff"
+            />
           </q-card-section>
 
           <q-card-actions align="right">
@@ -109,11 +157,11 @@ const confirm = () => {
 
       </q-card-section>
 
-      <q-separator />
+      <q-separator/>
 
       <!-- FOOTER -->
       <q-card-actions align="right">
-        <q-btn flat label="Cancel" color="grey" v-close-popup />
+        <q-btn flat label="Cancel" color="grey" v-close-popup/>
         <q-btn
           unelevated
           color="primary"
