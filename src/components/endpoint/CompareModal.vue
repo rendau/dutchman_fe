@@ -1,71 +1,150 @@
 <script setup>
-import {useDialogPluginComponent} from "quasar";
+import { ref } from 'vue'
+import { useDialogPluginComponent } from 'quasar'
 
 const props = defineProps({
   endpoints: {
-    newEndpoint: Object,
-    oldEndpoint: Object
+    type: Object,
+    required: true
   }
 })
 
 defineEmits([
-  // REQUIRED; need to specify some events that your
-  // component will emit through useDialogPluginComponent()
   ...useDialogPluginComponent.emits
 ])
 
-const {dialogRef, onDialogHide, onDialogOK} = useDialogPluginComponent()
+const { dialogRef, onDialogOK, onDialogHide } = useDialogPluginComponent()
 
-function onSelect(value) {
-  if (value === 'old') {
+const selected = ref(null)
+
+const selectOld = () => {
+  selected.value = 'old'
+}
+
+const selectNew = () => {
+  selected.value = 'new'
+}
+
+const confirm = () => {
+  if (selected.value === 'old') {
     onDialogOK(props.endpoints.oldEndpoint)
-  }
-  else {
+  } else if (selected.value === 'new') {
     onDialogOK(props.endpoints.newEndpoint)
   }
 }
 </script>
 
 <template>
-  <q-dialog ref="dialogRef" @hide="onDialogHide">
-    <p>
-      There is same endpoint, with some differences, select one of them
-    </p>
-    <q-card class="flex">
-      <q-card-section class="flex-1">
-        old
-        <button @click="onSelect('old')">
-          <pre>
-            {{ endpoints.oldEndpoint }}
-          </pre>
-        </button>
+  <q-dialog ref="dialogRef" @hide="onDialogHide" maximized>
+    <q-card class="column full-height">
+
+      <!-- HEADER -->
+      <q-card-section class="text-h6">
+        Duplicate endpoint detected
+        <div class="text-caption text-grey-6">
+          Choose which version you want to keep
+        </div>
       </q-card-section>
-      <q-card-section class="flex-1 flex flex-col">
-        new
-        <button @click="onSelect('new')">
-          <pre>
-            {{ endpoints.newEndpoint }}
-          </pre>
-        </button>
+
+      <q-separator />
+
+      <!-- CONTENT -->
+      <q-card-section class="row q-col-gutter-md flex-1 overflow-hidden">
+
+        <!-- OLD -->
+        <q-card
+          flat
+          bordered
+          class="col selectable"
+          :class="{ selected: selected === 'old' }"
+          @click="selectOld"
+        >
+          <q-card-section class="text-subtitle2 text-grey-7">
+            Existing endpoint
+          </q-card-section>
+
+          <q-separator />
+
+          <q-card-section class="scroll">
+            <pre>{{ endpoints.oldEndpoint }}</pre>
+          </q-card-section>
+
+          <q-card-actions align="right">
+            <q-btn
+              outline
+              color="primary"
+              label="Use this"
+              @click.stop="selectOld"
+            />
+          </q-card-actions>
+        </q-card>
+
+        <!-- NEW -->
+        <q-card
+          flat
+          bordered
+          class="col selectable"
+          :class="{ selected: selected === 'new' }"
+          @click="selectNew"
+        >
+          <q-card-section class="text-subtitle2 text-grey-7">
+            Imported endpoint
+          </q-card-section>
+
+          <q-separator />
+
+          <q-card-section class="scroll">
+            <pre>{{ endpoints.newEndpoint }}</pre>
+          </q-card-section>
+
+          <q-card-actions align="right">
+            <q-btn
+              outline
+              color="primary"
+              label="Use this"
+              @click.stop="selectNew"
+            />
+          </q-card-actions>
+        </q-card>
+
       </q-card-section>
+
+      <q-separator />
+
+      <!-- FOOTER -->
+      <q-card-actions align="right">
+        <q-btn flat label="Cancel" color="grey" v-close-popup />
+        <q-btn
+          unelevated
+          color="primary"
+          label="Confirm"
+          :disable="!selected"
+          @click="confirm"
+        />
+      </q-card-actions>
+
     </q-card>
   </q-dialog>
 </template>
 
 <style scoped>
-button {
-  text-align: start;
+.selectable {
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
-.flex {
-  display: flex;
+.selectable:hover {
+  border-color: var(--q-primary);
 }
 
-.flex-1 {
-  flex: 1 1 0
+.selected {
+  border: 2px solid var(--q-primary);
+  background: rgba(25, 118, 210, 0.04);
 }
 
-.flex-col {
-  flex-direction: column;
+pre {
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 </style>
