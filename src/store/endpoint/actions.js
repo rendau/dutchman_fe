@@ -17,7 +17,3 @@ export function update (ctx, { id, data }) {
 export function remove (ctx, id) {
   return this.$api.delete(`endpoint/${id}`)
 }
-
-export function importEndpoints(ctx, id) {
-  return this.$api.post(`endpoint/${id}k`)
-}

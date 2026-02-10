@@ -13,10 +13,10 @@
         class="hidden"
         @change="onFile"
       />
-      <div v-if="results.length" class="row">
+      <div v-if="results.length" class="row items-center">
 
-        <q-btn dense flat round icon="upload" color="primary" size=".9rem" @click="fileInput?.click()"/>
-        <q-btn dense flat round icon="download" color="primary" size=".9rem" @click="onDownload"/>
+        <q-btn dense flat icon="upload" color="primary" size=".9rem" label="Import" @click="fileInput?.click()"/>
+        <q-btn dense flat icon="download" color="primary" size=".9rem" label="Export" @click="onDownload"/>
         <!-- add button -->
         <q-btn dense flat round icon="add" color="primary" size=".9rem" @click="onAddClick"/>
 
